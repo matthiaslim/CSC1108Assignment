@@ -95,7 +95,6 @@ Savonlinna Airport,Savonlinna,Finland,SVL,61.943099975586,28.945100784302,311,2,
 Sodankyla Airport,Sodankyla,Finland,SOT,67.3949966431,26.619100570700002,602,2,E
 Tampere-Pirkkala Airport,Tampere,Finland,TMP,61.414100646973,23.604400634766,390,2,E
 Turku Airport,Turku,Finland,TKU,60.514099121094,22.262800216675,161,2,E
-Utti Air Base,Utti,Finland,UTI,60.89640045165999,26.938400268555004,339,2,E
 Vaasa Airport,Vaasa,Finland,VAA,63.050701141357,21.762199401855,19,2,E
 Varkaus Airport,Varkaus,Finland,VRK,62.171100616455,27.868600845337,286,2,E
 Ylivieska Airfield,Ylivieska-raudaskyla,Finland,YLI,64.0547222,24.7252778,252,2,E
@@ -109,7 +108,6 @@ Gloucestershire Airport,Golouchestershire,United Kingdom,GLO,51.89419937133789,-
 Cotswold Airport,Pailton,United Kingdom,GBA,51.668095,-2.05694,433,0,E
 Manchester Airport,Manchester,United Kingdom,MAN,53.35369873046875,-2.2749500274658203,257,0,E
 Newquay Cornwall Airport,Newquai,United Kingdom,NQY,50.44060134887695,-4.995409965515137,390,0,E
-RAF Lyneham,Lyneham,United Kingdom,LYE,51.5051,-1.99343,513,0,E
 RNAS Yeovilton,Yeovilton,United Kingdom,YEO,51.0093994140625,-2.638819932937622,75,0,E
 Haverfordwest Airport,Haverfordwest,United Kingdom,HAW,51.83309936523438,-4.9611101150512695,159,0,E
 Cardiff International Airport,Cardiff,United Kingdom,CWL,51.39670181274414,-3.343329906463623,220,0,E
@@ -159,41 +157,20 @@ Scatsta Airport,Scatsta,United Kingdom,SCS,60.43280029296875,-1.2961100339889526
 Dundee Airport,Dundee,United Kingdom,DND,56.45249938964844,-3.0258300304412837,17,0,E
 Stornoway Airport,Stornoway,United Kingdom,SYY,58.215599060058594,-6.3311100006103525,26,0,E
 Tiree Airport,Tiree,United Kingdom,TRE,56.49919891357422,-6.869170188903809,38,0,E
-RAF Leuchars,Leuchars,United Kingdom,ADX,56.37289810180664,-2.8684399127960205,38,0,E
-RAF Lossiemouth,Lossiemouth,United Kingdom,LMO,57.7052001953125,-3.339169979095459,42,0,E
 Cambridge Airport,Cambridge,United Kingdom,CBG,52.205002,0.175,47,0,E
 Norwich International Airport,Norwich,United Kingdom,NWI,52.675800323500006,1.28278005123,117,0,E
 London Stansted Airport,London,United Kingdom,STN,51.8849983215,0.23499999940400002,348,0,E
 Exeter International Airport,Exeter,United Kingdom,EXT,50.73440170288086,-3.4138898849487305,102,0,E
 Bristol Filton Airport,Bristol,United Kingdom,FZO,51.519401550299996,-2.5908300876599997,226,0,E
 Oxford (Kidlington) Airport,Oxford,United Kingdom,OXF,51.8368988037,-1.32000005245,270,0,E
-RAF Benson,Benson,United Kingdom,BEX,51.616401672399995,-1.09582996368,226,0,E
-RAF Lakenheath,Lakenheath,United Kingdom,LKZ,52.409301757799994,0.5609999895100001,32,0,E
-RAF Mildenhall,Mildenhall,United Kingdom,MHZ,52.361900329589844,0.4864059984683991,33,0,E
-RAF Wyton,Wyton,United Kingdom,QUY,52.357200622600004,-0.107832998037,135,0,E
-RAF Fairford,Fairford,United Kingdom,FFD,51.6822013855,-1.7900300025900002,286,0,E
-RAF Brize Norton,Brize Norton,United Kingdom,BZZ,51.75,-1.58362,288,0,E
-RAF Odiham,Odiham,United Kingdom,ODH,51.2341003418,-0.9428250193600001,405,0,E
-RAF Northolt,Northolt,United Kingdom,NHT,51.5530014038,-0.418166995049,124,0,E
-RAF Coningsby,Coningsby,United Kingdom,QCY,53.0929985046,-0.166014000773,25,0,E
-RAF Honington,Honington,United Kingdom,BEQ,52.34260177612305,0.7729390263557434,174,0,E
-RAF Scampton,Scampton,United Kingdom,SQZ,53.307800293,-0.550832986832,202,0,E
-RAF Linton-On-Ouse,Linton-on-ouse,United Kingdom,HRT,54.0489006042,-1.2527500391,53,0,E
-RAF Waddington,Waddington,United Kingdom,WTN,53.1661987305,-0.5238109827040001,231,0,E
-RAF Marham,Marham,United Kingdom,KNF,52.648394999999994,0.550692,75,0,E
 Amsterdam Airport Schiphol,Amsterdam,Netherlands,AMS,52.308601,4.76389,-11,1,E
 Maastricht Aachen Airport,Maastricht,Netherlands,MST,50.911701,5.7701400000000005,375,1,E
 Eindhoven Airport,Eindhoven,Netherlands,EIN,51.4500999451,5.374529838559999,74,1,E
 Eelde Airport,Groningen,Netherlands,GRQ,53.1197013855,6.579440116880001,17,1,E
-Gilze Rijen Air Base,Gilze-rijen,Netherlands,GLZ,51.56740188598633,4.931829929351807,49,1,E
 De Kooy Airport,De Kooy,Netherlands,DHR,52.92340087890625,4.780620098114014,3,1,E
 Lelystad Airport,Lelystad,Netherlands,LEY,52.4603,5.52722,-13,1,E
-Leeuwarden Air Base,Leeuwarden,Netherlands,LWR,53.228599548339844,5.760560035705566,3,1,E
 Rotterdam The Hague Airport,Rotterdam,Netherlands,RTM,51.956902,4.43722,-15,1,E
-Soesterberg Air Base,Soesterberg,Netherlands,UTC,52.1273002625,5.27618980408,66,1,E
 Twente Airport,Enschede,Netherlands,ENS,52.275833,6.889167,114,1,E
-Valkenburg Naval Air Base,Valkenburg,Netherlands,LID,52.1660995483,4.41794013977,1,1,E
-Woensdrecht Air Base,Woensdrecht,Netherlands,WOE,51.4491,4.34203,63,1,E
 Cork Airport,Cork,Ireland,ORK,51.84130096435547,-8.491109848022461,502,0,E
 Galway Airport,Galway,Ireland,GWY,53.30020141601562,-8.941590309143066,81,0,E
 Dublin Airport,Dublin,Ireland,DUB,53.421299,-6.27007,242,0,E
@@ -213,7 +190,6 @@ Odense Airport,Odense,Denmark,ODE,55.47669982910156,10.330900192260742,56,1,E
 Copenhagen Roskilde Airport,Copenhagen,Denmark,RKE,55.58560180664063,12.131400108337402,146,1,E
 Bornholm Airport,Ronne,Denmark,RNN,55.06330108642578,14.759599685668945,52,1,E
 Sønderborg Airport,Soenderborg,Denmark,SGD,54.96440124511719,9.791729927062988,24,1,E
-Skrydstrup Air Base,Skrydstrup,Denmark,SKS,55.221047999999996,9.26702,141,1,E
 Skive Airport,Skive,Denmark,SQW,56.55020141601562,9.172980308532717,74,1,E
 Thisted Airport,Thisted,Denmark,TED,57.06880187988281,8.705220222473145,23,1,E
 Stauning Airport,Stauning,Denmark,STA,55.9901008605957,8.353910446166992,17,1,E
@@ -258,7 +234,6 @@ Katowice International Airport,Katowice,Poland,KTW,50.4743,19.08,995,1,E
 Poznań-Ławica Airport,Poznan,Poland,POZ,52.4210014343,16.8262996674,308,1,E
 Rzeszów-Jasionka Airport,Rzeszow,Poland,RZE,50.1100006104,22.018999099699997,675,1,E
 "Szczecin-Goleniów ""Solidarność"" Airport",Szczecin,Poland,SZZ,53.584701538100006,14.902199745199999,154,1,E
-Redzikowo Air Base,Slupsk,Poland,OSP,54.47890090942383,17.107500076293945,217,1,E
 Warsaw Chopin Airport,Warsaw,Poland,WAW,52.1656990051,20.9671001434,362,1,E
 Copernicus Wrocław Airport,Wroclaw,Poland,WRO,51.10269927979999,16.885799408,404,1,E
 Zielona Góra-Babimost Airport,Zielona Gora,Poland,IEG,52.1385002136,15.7986001968,194,1,E
@@ -302,21 +277,14 @@ Linköping City Airport,Linkoeping,Sweden,LPI,58.406200408900006,15.6805000305,1
 Norrköping Airport,Norrkoeping,Sweden,NRK,58.58629989624024,16.250600814819336,32,1,E
 Eskilstuna Airport,Eskilstuna,Sweden,EKT,59.35110092163086,16.70840072631836,139,1,E
 Visby Airport,Visby,Sweden,VBY,57.662799835205,18.346200942993,164,1,E
-Spangdahlem Air Base,Spangdahlem,Germany,SPM,49.9726982117,6.6925001144400005,1197,1,E
-Ramstein Air Base,Ramstein,Germany,RMS,49.4369010925293,7.600279808044434,776,1,E
 [Duplicate] Giebelstadt Army Air Field,Giebelstadt,Germany,GHF,49.648101806599996,9.966489791870002,980,1,E
 Celle Airport,Celle,Germany,ZCN,52.59120178222656,10.022100448608398,129,1,E
 Fritzlar Airport,Fritzlar,Germany,FRZ,51.1146,9.286,1345,1,E
 Hanau Army Air Field,Hanau,Germany,ZNF,50.169201,8.96159,368,1,E
 Flugplatz Kitzingen,Kitzingen,Germany,KZG,49.743099,10.2006,689,1,E
-Nordholz Naval Airbase,Nordholz,Germany,FCN,53.767700195299994,8.658499717709999,74,1,E
-Geilenkirchen Air Base,Geilenkirchen,Germany,GKE,50.9608,6.04242,296,1,E
 Rostock-Laage Airport,Laage,Germany,RLG,53.9182014465,12.2783002853,138,1,E
-Schleswig Air Base,Schleswig,Germany,WBG,54.459301,9.51633,70,1,E
 Wiesbaden Army Airfield,Wiesbaden,Germany,WIE,50.04980087280274,8.325400352478027,461,1,E
-Fürstenfeldbruck Air Base,Fuerstenfeldbruck,Germany,FEL,48.205555,11.266944,1703,1,E
 Ingolstadt Manching Airport,Ingolstadt,Germany,IGS,48.7156982421875,11.534000396728516,1202,1,E
-Gütersloh Air Base,Guetersloh,Germany,GUT,51.922798,8.30633,236,1,E
 Melilla Airport,Melilla,Spain,MLN,35.279800415,-2.9562599658999997,156,1,E
 Tirana International Airport Mother Teresa,Tirana,Albania,TIA,41.4146995544,19.7206001282,126,1,E
 Burgas Airport,Bourgas,Bulgaria,BOJ,42.56959915161133,27.515199661254886,135,2,E
@@ -325,7 +293,6 @@ Plovdiv International Airport,Plovdiv,Bulgaria,PDV,42.067799,24.8508,597,2,E
 Sofia Airport,Sofia,Bulgaria,SOF,42.696693420410156,23.411436080932614,1742,2,E
 Stara Zagora Airport,Stara Zagora,Bulgaria,SZR,42.3766667,25.655,558,2,E
 Varna Airport,Varna,Bulgaria,VAR,43.232101,27.8251,230,2,E
-RAF Akrotiri,Akrotiri,Cyprus,AKT,34.590401,32.9879,76,0,E
 Dubrovnik Airport,Dubrovnik,Croatia,DBV,42.5614013671875,18.268199920654297,527,1,E
 Osijek Airport,Osijek,Croatia,OSI,45.46269989013672,18.810199737548828,290,1,E
 Pula Airport,Pula,Croatia,PUY,44.89350128173828,13.922200202941895,274,1,E
@@ -350,9 +317,7 @@ San Javier Airport,Murcia,Spain,MJV,37.775001525878906,-0.8123890161514282,11,1,
 Adolfo Suárez Madrid–Barajas Airport,Madrid,Spain,MAD,40.471926,-3.56264,1998,1,E
 Málaga Airport,Malaga,Spain,AGP,36.67490005493164,-4.499110221862793,53,1,E
 Menorca Airport,Menorca,Spain,MAH,39.86259841918945,4.2186498641967765,302,1,E
-Moron Air Base,Sevilla,Spain,OZP,37.17490005493164,-5.6159400939941415,285,1,E
 Pamplona Airport,Pamplona,Spain,PNA,42.77000045776367,-1.6463299989700315,1504,1,E
-Reus Air Base,Reus,Spain,REU,41.14739990234375,1.1671700477600098,233,1,E
 Rota Naval Station Airport,Rota,Spain,ROZ,36.645198822,-6.34946012497,86,1,E
 Salamanca Airport,Salamanca,Spain,SLM,40.95209884643555,-5.501989841461182,2595,1,E
 San Sebastian Airport,San Sebastian,Spain,EAS,43.35649871826172,-1.7906099557876587,16,1,E
@@ -364,7 +329,6 @@ Valladolid Airport,Valladolid,Spain,VLL,41.7061004639,-4.85194015503,2776,1,E
 Vitoria/Foronda Airport,Vitoria,Spain,VIT,42.8828010559082,-2.7244699001312256,1682,1,E
 Vigo Airport,Vigo,Spain,VGO,42.2318000793457,-8.62677001953125,856,1,E
 Santander Airport,Santander,Spain,SDR,43.427101135253906,-3.82000994682312,16,1,E
-Zaragoza Air Base,Zaragoza,Spain,ZAZ,41.66619873046875,-1.0415500402450562,863,1,E
 Sevilla Airport,Sevilla,Spain,SVQ,37.41799926757813,-5.8931097984313965,112,1,E
 Calais-Dunkerque Airport,Calais,France,CQF,50.96210098266602,1.954759955406189,12,1,E
 Albert-Bray Airport,Albert,France,BYF,49.9715003967,2.6976599693299996,364,1,E
@@ -373,7 +337,6 @@ Valenciennes-Denain Airport,Valenciennes,France,XVS,50.32580184936523,3.46126008
 Agen-La Garenne Airport,Agen,France,AGF,44.17470169067383,0.5905560255050659,204,1,E
 Bordeaux-Mérignac Airport,Bordeaux,France,BOD,44.8283004761,-0.7155560255050001,162,1,E
 Bergerac-Roumanière Airport,Bergerac,France,EGC,44.82529830932617,0.5186110138893127,171,1,E
-Cognac-Châteaubernard (BA 709) Air Base,Cognac,France,CNG,45.65829849243164,-0.3174999952316284,102,1,E
 Poitiers-Biard Airport,Poitiers,France,PIS,46.58769989013672,0.30666598677635193,423,1,E
 Montluçon-Guéret Airport,Montlucon-gueret,France,MCU,46.22259902954102,2.3639600276947017,1497,1,E
 Limoges Airport,Limoges,France,LIG,45.86280059814453,1.1794400215148926,1300,1,E
@@ -402,7 +365,6 @@ Calvi-Sainte-Catherine Airport,Calvi,France,CLY,42.52444439999999,8.793055599999
 Figari Sud-Corse Airport,Figari,France,FSC,41.5005989074707,9.097780227661133,87,1,E
 Ajaccio-Napoléon Bonaparte Airport,Ajaccio,France,AJA,41.92359924316406,8.8029203414917,18,1,E
 Propriano Airport,Propriano,France,PRP,41.66059875488281,8.889749526977539,13,1,E
-Solenzara (BA 126) Air Base,Solenzara,France,SOZ,41.924400329589844,9.406000137329102,28,1,E
 Auxerre-Branches Airport,Auxerre,France,AUF,47.85020065307617,3.4971098899841313,523,1,E
 Chambéry-Savoie Airport,Chambery,France,CMF,45.638099670410156,5.880229949951173,779,1,E
 Clermont-Ferrand Auvergne Airport,Clermont-Ferrand,France,CFE,45.786701202399996,3.1691699027999998,1090,1,E
@@ -423,7 +385,6 @@ Saint-Étienne-Bouthéon Airport,St-Etienne,France,EBU,45.54059982299805,4.29639
 Carcassonne Airport,Carcassonne,France,CCF,43.21599960327149,2.3063199520111084,433,1,E
 Marseille Provence Airport,Marseille,France,MRS,43.439271921999996,5.22142410278,74,1,E
 Nice-Côte d'Azur Airport,Nice,France,NCE,43.658401489300005,7.215869903560001,12,1,E
-Orange-Caritat (BA 115) Air Base,Orange,France,XOG,44.14049911499024,4.866720199584961,197,1,E
 Perpignan-Rivesaltes (Llabanère) Airport,Perpignan,France,PGF,42.74039840698242,2.8706700801849365,144,1,E
 Le Castellet Airport,Le Castellet,France,CTT,43.25249862670898,5.785190105438232,1391,1,E
 Montpellier-Méditerranée Airport,Montpellier,France,MPL,43.57619857788086,3.96301007270813,17,1,E
@@ -431,22 +392,18 @@ Béziers-Vias Airport,Beziers,France,BZR,43.32350158691406,3.353899955749512,56,
 Avignon-Caumont Airport,Avignon,France,AVN,43.90729904174805,4.901830196380615,124,1,E
 Mende-Brenoux Airfield,Mende,France,MEN,44.502102,3.5328199999999996,3362,1,E
 Paris Beauvais Tillé Airport,Beauvais,France,BVA,49.45439910888672,2.1127800941467285,359,1,E
-Évreux-Fauville (BA 105) Air Base,Evreux,France,EVX,49.02870178222656,1.219859957695007,464,1,E
 Le Havre Octeville Airport,Le Havre,France,LEH,49.53390121459961,0.08805599808692932,313,1,E
 Abbeville,Abbeville,France,XAB,50.143501,1.831891,220,1,E
-Orléans-Bricy (BA 123) Air Base,Orleans,France,ORE,47.9878005981,1.7605600357100002,412,1,E
 Châlons-Vatry Airport,Chalons,France,XCR,48.7733333333,4.206111111,587,1,E
 Rouen Airport,Rouen,France,URO,49.38420104980469,1.1748000383377075,512,1,E
 Tours-Val-de-Loire Airport,Tours,France,TUF,47.4322013855,0.727605998516,357,1,E
 Cholet Le Pontreau Airport,Cholet,France,CET,47.08209991455078,-0.8770639896392822,443,1,E
 Laval-Entrammes Airport,Laval,France,LVA,48.03139877319336,-0.7429860234260559,330,1,E
 Paris-Le Bourget Airport,Paris,France,LBG,48.969398498535156,2.441390037536621,218,1,E
-Creil Air Base,Creil,France,CSF,49.253501892089844,2.5191400051116943,291,1,E
 Charles de Gaulle International Airport,Paris,France,CDG,49.012798,2.55,392,1,E
 Toussus-le-Noble Airport,Toussous-le-noble,France,TNF,48.75189971923828,2.1061899662017822,538,1,E
 Paris-Orly Airport,Paris,France,ORY,48.7233333,2.3794444,291,1,E
 Pontoise - Cormeilles-en-Vexin Airport,Pontoise,France,POX,49.096667,2.040833,325,1,E
-Villacoublay-Vélizy (BA 107) Air Base,Villacoublay,France,VIY,48.7741667,2.1916667000000003,584,1,E
 Nevers-Fourchambault Airport,Nevers,France,NVS,47.002601623535156,3.1133298873901367,602,1,E
 Maubeuge-Élesmes Airport,Maubeuge,France,XME,50.31050109863281,4.0331201553344735,452,1,E
 Lille-Lesquin Airport,Lille,France,LIL,50.563332,3.0868860000000002,157,1,E
@@ -460,7 +417,6 @@ Granville Airport,Granville,France,GFR,48.88309860229492,-1.564170002937317,45,1
 Deauville-Saint-Gatien Airport,Deauville,France,DOL,49.3652992249,0.154305994511,479,1,E
 Lorient South Brittany (Bretagne Sud) Airport,Lorient,France,LRT,47.76060104370117,-3.440000057220459,160,1,E
 La Roche-sur-Yon Airport,La Roche-sur-yon,France,EDM,46.70190048217773,-1.3786300420761108,299,1,E
-Landivisiau Air Base,Landivisiau,France,LDV,48.53030014038086,-4.151639938354491,348,1,E
 Caen-Carpiquet Airport,Caen,France,CFR,49.173301696777344,-0.44999998807907104,256,1,E
 Le Mans-Arnage Airport,Le Mans,France,LME,47.94860076904297,0.201666995882988,194,1,E
 Rennes-Saint-Jacques Airport,Rennes,France,RNS,48.0694999695,-1.73478996754,124,1,E
@@ -473,15 +429,11 @@ Vannes-Meucon Airport,Vannes,France,VNE,47.72330093383789,-2.718559980392456,446
 Saint-Nazaire-Montoir Airport,St.-nazaire,France,SNR,47.3105556,-2.1566667,13,1,E
 EuroAirport Basel-Mulhouse-Freiburg Airport,Mulhouse,France,BSL,47.59,7.5291667,885,1,E
 Dijon-Bourgogne Airport,Dijon,France,DIJ,47.268902000000004,5.09,726,1,E
-Metz-Frescaty (BA 128) Air Base,Metz,France,MZM,49.07170104980469,6.131669998168945,629,1,E
 Épinal-Mirecourt Airport,Epinal,France,EPL,48.325001,6.06998,1084,1,E
 Nancy-Essey Airport,Nancy,France,ENC,48.692100524902344,6.230460166931152,751,1,E
-Reims-Champagne (BA 112) Air Base,Reims,France,RHE,49.310001,4.05,312,1,E
 Strasbourg Airport,Strasbourg,France,SXB,48.53829956054688,7.628230094909668,505,1,E
 Toulon-Hyères Airport,Hyeres,France,TLN,43.0973014832,6.14602994919,7,1,E
 Nîmes-Arles-Camargue Airport,Nimes,France,FNI,43.75740051269531,4.4163498878479,309,1,E
-Andravida Air Base,Andravida,Greece,PYR,37.9207,21.292601,55,2,E
-Agrinion Air Base,Agrinion,Greece,AGQ,38.602001,21.351200100000003,154,2,E
 Dimokritos Airport,Alexandroupolis,Greece,AXD,40.855899810791016,25.956300735473636,24,2,E
 Nea Anchialos Airport,Nea Anghialos,Greece,VOL,39.21960067749024,22.794300079345703,83,2,E
 Chios Island National Airport,Chios,Greece,JKH,38.34320068359375,26.14060020446777,15,2,E
@@ -520,7 +472,6 @@ Crotone Airport,Crotone,Italy,CRV,38.9972,17.0802,522,1,E
 Bari Karol Wojtyła Airport,Bari,Italy,BRI,41.138901000000004,16.760599,177,1,E
 "Foggia ""Gino Lisa"" Airport",Foggia,Italy,FOG,41.432899,15.535,265,1,E
 "Taranto-Grottaglie ""Marcello Arlotta"" Airport",Grottaglie,Italy,TAR,40.517502,17.4032,215,1,E
-Lecce Galatina Air Base,Lecce,Italy,LCC,40.239201,18.133301,156,1,E
 Pescara International Airport,Pescara,Italy,PSR,42.431702,14.1811,48,1,E
 Brindisi – Salento Airport,Brindisi,Italy,BDS,40.6576,17.947001,47,1,E
 Lamezia Terme Airport,Lamezia,Italy,SUF,38.905398999999996,16.2423,39,1,E
@@ -530,9 +481,7 @@ Pantelleria Airport,Pantelleria,Italy,PNL,36.816502,11.9689,628,1,E
 Falcone–Borsellino Airport,Palermo,Italy,PMO,38.175999,13.091,65,1,E
 Reggio Calabria Airport,Reggio Calabria,Italy,REG,38.071201,15.6516,96,1,E
 Vincenzo Florio Airport Trapani-Birgi,Trapani,Italy,TPS,37.9114,12.488,25,1,E
-Sigonella Navy Air Base,Sigonella,Italy,NSY,37.401699,14.9224,79,1,E
 Alghero-Fertilia Airport,Alghero,Italy,AHO,40.632099,8.29077,87,1,E
-Decimomannu Air Base,Decimomannu,Italy,DCI,39.354198,8.972480000000001,100,1,E
 Cagliari Elmas Airport,Cagliari,Italy,CAG,39.251499,9.05428,13,1,E
 Olbia Costa Smeralda Airport,Olbia,Italy,OLB,40.898701,9.51763,37,1,E
 Tortolì Airport,Tortoli,Italy,TTB,39.9188,9.68298,23,1,E
@@ -544,7 +493,6 @@ Genoa Cristoforo Colombo Airport,Genoa,Italy,GOA,44.4133,8.8375,13,1,E
 Milano Linate Airport,Milan,Italy,LIN,45.445099,9.27674,353,1,E
 Parma Airport,Parma,Italy,PMF,44.824501,10.2964,161,1,E
 Cuneo International Airport,Cuneo,Italy,CUF,44.547001,7.62322,1267,1,E
-Aviano Air Base,Aviano,Italy,AVB,46.031898,12.596503,410,1,E
 Bolzano Airport,Bolzano,Italy,BZO,46.460201,11.3264,789,1,E
 Bologna Guglielmo Marconi Airport,Bologna,Italy,BLQ,44.5354,11.2887,123,1,E
 Treviso-Sant'Angelo Airport,Treviso,Italy,TSF,45.648399,12.1944,59,1,E
@@ -560,11 +508,9 @@ Siena-Ampugnano Airport,Siena,Italy,SAY,43.256302000000005,11.255,634,1,E
 Ciampino–G. B. Pastine International Airport,Rome,Italy,CIA,41.7994,12.5949,427,1,E
 Leonardo da Vinci–Fiumicino Airport,Rome,Italy,FCO,41.800277799999996,12.238888900000001,13,1,E
 Marina Di Campo Airport,Marina Di Campo,Italy,EBA,42.7603,10.2394,31,1,E
-Latina Air Base,Latina,Italy,QLT,41.5424,12.909,94,1,E
 Naples International Airport,Naples,Italy,NAP,40.886002000000005,14.2908,294,1,E
 Pisa International Airport,Pisa,Italy,PSA,43.683899,10.3927,6,1,E
 Peretola Airport,Florence,Italy,FLR,43.810001,11.2051,142,1,E
-Grosseto Air Base,Grosseto,Italy,GRS,42.759701,11.0719,17,1,E
 Perugia San Francesco d'Assisi – Umbria International Airport,Perugia,Italy,PEG,43.095901,12.5132,697,1,E
 Ljubljana Jože Pučnik Airport,Ljubljana,Slovenia,LJU,46.223701,14.4576,1273,1,E
 Maribor Airport,Maribor,Slovenia,MBX,46.47990036010742,15.686100006103516,876,1,E
@@ -573,7 +519,6 @@ Kunovice Airport,Kunovice,Czech Republic,UHE,49.02939987182617,17.43969917297363
 Karlovy Vary International Airport,Karlovy Vary,Czech Republic,KLV,50.20299911499024,12.914999961853027,1989,1,E
 Ostrava Leos Janáček Airport,Ostrava,Czech Republic,OSR,49.6963005065918,18.111099243164066,844,1,E
 Pardubice Airport,Pardubice,Czech Republic,PED,50.01340103149414,15.73859977722168,741,1,E
-Přerov Air Base,Prerov,Czech Republic,PRV,49.42580032348633,17.404699325561527,676,1,E
 Václav Havel Airport Prague,Prague,Czech Republic,PRG,50.1008,14.26,1247,1,E
 Brno-Tuřany Airport,Brno,Czech Republic,BRQ,49.15129852294922,16.694400787353516,778,1,E
 Vodochody Airport,Vodochody,Czech Republic,VOD,50.216599,14.3958,919,1,E
@@ -583,13 +528,10 @@ Innsbruck Airport,Innsbruck,Austria,INN,47.260201,11.344000000000001,1907,1,E
 Linz Hörsching Airport,Linz,Austria,LNZ,48.2332,14.1875,980,1,E
 Salzburg Airport,Salzburg,Austria,SZG,47.793300628699996,13.0043001175,1411,1,E
 Vienna International Airport,Vienna,Austria,VIE,48.110298156738004,16.569700241089002,600,1,E
-Alverca Air Base,Alverca,Portugal,AVR,38.883301,-9.0301,11,0,E
 Bragança Airport,Braganca,Portugal,BGC,41.8578,-6.70713,2241,0,E
-Beja Airport / Airbase,Beja (madeira),Portugal,BYJ,38.078899,-7.9324,636,0,E
 Braga Municipal Aerodrome,Braga,Portugal,BGZ,41.5871009827,-8.445139884949999,247,0,E
 Cascais Airport,Cascais,Portugal,CAT,38.724998,-9.35523,325,0,E
 Faro Airport,Faro,Portugal,FAO,37.014400482199996,-7.965909957889999,24,0,E
-Monte Real Air Base,Monte Real,Portugal,QLR,39.828334999999996,-8.8875,187,0,E
 Portimão Airport,Portimao,Portugal,PRM,37.1493,-8.583960000000001,5,0,E
 Francisco de Sá Carneiro Airport,Porto,Portugal,OPO,41.248100280799996,-8.68138980865,228,0,E
 Porto Santo Airport,Porto Santo,Portugal,PXO,33.073398590100005,-16.3500003815,341,0,E
@@ -617,7 +559,6 @@ Transilvania Târgu Mureş International Airport,Tirgu Mures,Romania,TGM,46.4677
 Timişoara Traian Vuia Airport,Timisoara,Romania,TSR,45.80989837646485,21.337900161743164,348,2,E
 Geneva Cointrin International Airport,Geneva,Switzerland,GVA,46.23809814453125,6.108950138092041,1411,1,E
 Sion Airport,Sion,Switzerland,SIR,46.2196006775,7.326759815220001,1585,1,E
-Emmen Air Base,Emmen,Switzerland,EML,47.092444,8.305183999999999,1400,1,E
 Lugano Airport,Lugano,Switzerland,LUG,46.00429916379999,8.9105796814,915,1,E
 Bern Belp Airport,Bern,Switzerland,BRN,46.914100647,7.4971499443099985,1674,1,E
 Grenchen Airport,Grenchen,Switzerland,ZHI,47.181599,7.41719,1411,1,E
@@ -625,9 +566,7 @@ Zürich Airport,Zurich,Switzerland,ZRH,47.464698999999996,8.54917,1416,1,E
 St Gallen Altenrhein Airport,Altenrhein,Switzerland,ACH,47.4850006104,9.560770034789998,1306,1,E
 Samedan Airport,Samedan,Switzerland,SMV,46.53409957885742,9.884110450744627,5600,1,E
 Esenboğa International Airport,Ankara,Turkey,ESB,40.128101348899996,32.995098114,3125,3,E
-Etimesgut Air Base,Ankara,Turkey,ANK,39.949798584,32.6885986328,2653,3,E
 Adana Airport,Adana,Turkey,ADA,36.982200622600004,35.2803993225,65,3,E
-İncirlik Air Base,Adana,Turkey,UAB,37.0021018982,35.4258995056,238,3,E
 Afyon Airport,Afyon,Turkey,AFY,38.726398468,30.601100921599997,3310,3,E
 Antalya International Airport,Antalya,Turkey,AYT,36.898701,30.800501,177,3,E
 Gaziantep International Airport,Gaziantep,Turkey,GZT,36.9472007751,37.4786987305,2315,3,E
@@ -641,7 +580,6 @@ Tokat Airport,Tokat,Turkey,TJK,40.307430267333984,36.367408752441406,1831,3,E
 Atatürk International Airport,Istanbul,Turkey,ISL,40.976898,28.8146,163,3,E
 Balıkesir Merkez Airport,Balikesir,Turkey,BZI,39.619300842285156,27.92600059509277,340,3,E
 Bandırma Airport,Bandirma,Turkey,BDM,40.31800079345703,27.97769927978516,170,3,E
-Eskişehir Air Base,Eskisehir,Turkey,ESK,39.7840995789,30.5820999146,2581,3,E
 Adnan Menderes International Airport,Izmir,Turkey,ADB,38.292400360100004,27.156999588,412,3,E
 Çiğli Airport,Izmir,Turkey,IGL,38.5130004883,27.010099411,16,3,E
 Cengiz Topel Airport,Topel,Turkey,KCO,40.73500061035156,30.08329963684082,182,3,E
@@ -689,7 +627,6 @@ Barysiai Airport,Barysiai,Lithuania,HLJ,56.07059860229492,23.5580997467041,270,2
 Kaunas International Airport,Kaunas,Lithuania,KUN,54.96390151977539,24.084800720214844,256,2,E
 Palanga International Airport,Palanga,Lithuania,PLQ,55.97320175170898,21.093900680541992,33,2,E
 Vilnius International Airport,Vilnius,Lithuania,VNO,54.634102,25.285801,648,2,E
-Panevėžys Air Base,Panevezys,Lithuania,PNV,55.72940063476562,24.46080017089844,197,2,E
 Memmingen Allgau Airport,Memmingen,Germany,FMM,47.9888000488,10.2395000458,2077,1,E
 Nevşehir Kapadokya Airport,Nevsehir,Turkey,NAV,38.7719,34.5345,3100,3,E
 Athen Helenikon Airport,Athens,Greece,HEW,37.893299,23.726101,69,2,E
@@ -829,7 +766,6 @@ Tuzla International Airport,Null,Bosnia and Herzegovina,TZL,44.45869827270508,18
 Langeoog Airport,Langeoog,Germany,LGO,53.74250030517578,7.4977779388427725,7,1,E
 Cherkasy International Airport,Cherkassy,Ukraine,CKC,49.41559982299805,31.99530029296875,375,2,E
 Mykolaiv International Airport,Nikolayev,Ukraine,NLV,47.057899475097656,31.9197998046875,184,2,E
-Interlaken Air Base,Interlaken,Switzerland,ZIN,46.676601399999996,7.8790797999999995,0,1,E
 Inisheer Aerodrome,Inisheer,Ireland,INQ,53.06470108032226,-9.510899543762207,40,0,E
 Hatay Airport,Hatay,Turkey,HTY,36.36277771,36.282222747800006,269,3,U
 Lleida-Alguaire Airport,Lleida,Spain,ILD,41.728184999999996,0.5350229999999999,1170,1,E
@@ -842,7 +778,6 @@ Fréjus Airport,Frejus,France,FRJ,43.4175,6.7357,33,1,E
 Oristano-Fenosu Airport,Oristano,Italy,FNU,39.895308,8.642661,36,1,E
 Wycombe Air Park,Wycombe,United Kingdom,HYC,51.611698150600006,-0.8083329796790001,515,0,E
 Bembridge Airport,Bembridge,United Kingdom,BBP,50.678100585900005,-1.10943996906,53,0,E
-Oksywie Military Air Base,Gdynia,Poland,QYD,54.57970047,18.51720047,144,1,E
 Zonguldak Airport,Zonguldak,Turkey,ONQ,41.506401061999995,32.0886001587,39,3,E
 Kirovograd Airport,Kirovograd,Ukraine,KGO,48.54280090332031,32.28499984741211,568,2,E
 Belbek Airport,Sevastopol,Ukraine,UKS,44.688999176,33.570999145500004,344,3,U
@@ -882,5 +817,4 @@ Kastamonu Airport,Kastamonu,Turkey,KFS,41.31420135498047,33.79579925537109,3520,
 Comiso Airport,Comiso,Italy,CIY,36.994601,14.607182,623,1,E
 Fontaine Airport,Belfort,France,BOR,47.65560150146499,7.0108299255371,1208,1,E
 Bursa Airport,Bursa,Turkey,BTZ,40.233299255371094,29.00919914245605,331,3,U
-Taszár Air Base,Columbus,United States,TZR,46.39310073852539,17.917499542236328,531,1,A
 Şırnak Şerafettin Elçi Airport,Cizre,Turkey,NKT,37.3647,42.0582,2038,3,E

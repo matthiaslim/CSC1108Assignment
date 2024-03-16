@@ -12,7 +12,9 @@ def read_airport_data(file_path):
 def slice_airport_data(airports, criteria):
     sliced_airports = []
     for airport in airports:
-        if criteria(airport):
+        # append rows based on criteria and do not append air bases (RAF = Royal Air Force)
+        if criteria(airport) and 'airbase' not in airport['Name'].lower() and 'air base' not in airport[
+                'Name'].lower() and 'RAF' not in airport['Name']:
             sliced_airports.append(airport)
     return sliced_airports
 
