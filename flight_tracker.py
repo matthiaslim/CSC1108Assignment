@@ -16,13 +16,20 @@ def group_airports_by_country(airports_df):
     return airports_by_country
 
 
-def main():
+def airports_data():
     europe_airports = pd.read_csv("europe_airports.csv")
     europe_airports['Name_IATA'] = europe_airports['Name'] + ' (' + europe_airports['IATA'] + ')'
 
     airports_by_country = group_airports_by_country(europe_airports)
-    print(airports_by_country)
+    #print(airports_by_country)
+    return airports_by_country
 
+def read_airports_from_csv():
+    airports = []
+    df = pd.read_csv("europe_airports.csv")
+    for _, row in df.iterrows():
+        airport = AirportNode(row['IATA'], row['Name'], row['City'], row['Country'], row['Latitude'], row['Longitude'])
+        airports.append(airport)
+    print(airports)
+    return airports
 
-if __name__ == "__main__":
-    main()
