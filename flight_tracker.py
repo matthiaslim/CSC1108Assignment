@@ -77,6 +77,12 @@ class AirportGraph:
                                               self.airports[destination_airport].latitude,
                                               self.airports[destination_airport].longitude)
 
+    def group_airports_by_country(self):
+        airports_df = pd.DataFrame(self.airports)
+        airports_df['Name_IATA'] = airports_df['Name'] + ' (' + airports_df['IATA'] + ')'
+        airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
+        return airports_by_country
+
 
 # Creating fibonacci tree
 class FibonacciTree:
@@ -169,37 +175,12 @@ def haversine_formula_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-def group_airports_by_country(airports_df):
-    airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
-    return airports_by_country
-
-
-def airports_data():
-    europe_airports = pd.read_csv("europe_airports.csv")
-    europe_airports['Name_IATA'] = europe_airports['Name'] + ' (' + europe_airports['IATA'] + ')'
-
-    airports_by_country = group_airports_by_country(europe_airports)
-    # print(airports_by_country)
-    return airports_by_country
-
-
-def read_airports_from_csv():
-    airports = []
-    df = pd.read_csv("europe_airports.csv")
-    for _, row in df.iterrows():
-        airport = AirportNode(row['IATA'], row['Name'], row['City'], row['Country'], row['Latitude'], row['Longitude'])
-        airports.append(airport)
-    print(airports)
-    return airports
-
-
 # find the shortest path between two airports using Dijkstra's shortest path algorithm
 def find_shortest_path(graph, source_airport, destination_airport):
     # Check if flight data from source airport exist in the graph
-    for flight in graph.flights:
-        if source_airport not in flight.source_airport:
-            print(f"Flights from '{source_airport}' do not exist.")
-            return None
+    if not any(flight.source_airport == source_airport for flight in graph.flights):
+        print(f"Flights from '{source_airport}' do not exist.")
+        return None
 
     # Clear shortest path memory
     distances = {}
@@ -271,4 +252,4 @@ def find_nearest_airport(graph, destination_airport):
 
 # test
 graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(find_shortest_path(graph, "CRV", "LHR"))
+print(find_shortest_path(graph, "LHR", "CRV"))
