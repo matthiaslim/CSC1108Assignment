@@ -1,6 +1,5 @@
 import pandas as pd
-import heapq
-from math import radians, sin, cos, asin, sqrt
+from math import radians, sin, cos, asin, sqrt, frexp
 
 
 class AirportNode:
@@ -81,73 +80,83 @@ class AirportGraph:
                                               self.airports[destination_airport][1])
 
 
-class MinHeap:
+# Creating fibonacci tree
+class FibonacciTree:
+    def __init__(self, value):
+        self.value = value
+        self.child = []
+        self.order = 0
+
+    # Adding tree at the end of the tree
+    def add_at_end(self, t):
+        self.child.append(t)
+        self.order = self.order + 1
+
+
+# Creating Fibonacci heap
+class FibonacciHeap:
     def __init__(self):
-        self.heap = []
+        self.trees = []
+        self.least = None
+        self.count = 0
 
-    def parent(self, i):
-        return (i - 1) // 2
+    # Insert a node
+    def insert_node(self, value):
+        new_tree = FibonacciTree(value)
+        self.trees.append(new_tree)
+        if self.least is None or value < self.least.value:
+            self.least = new_tree
+        self.count = self.count + 1
 
-    # insert a new key into the heap
-    def insert(self, key):
-        self.heap.append(key)
-        i = len(self.heap) - 1
-        while i > 0 and self.heap[self.parent(i)] > self.heap[i]:
-            self.heap[self.parent(i)], self.heap[i] = self.heap[i], self.heap[self.parent(i)]
-            i = self.parent(i)
-
-    # Remove and return minimum key from heap
-    def extract_min(self):
-        if len(self.heap) == 0:
-            return None
-        if len(self.heap) == 1:
-            return self.heap.pop()
-        root = self.heap[0]
-        self.heap[0] = self.heap.pop()
-        self.min_heapify(0)
-        return root
-
-    # Ensure that the subtree at index i satisfies the minimum heap property
-    def min_heapify(self, i):
-        left_child = 2 * i + 1
-        right_child = 2 * i + 2
-        smallest = i
-        if left_child < len(self.heap) and self.heap[left_child] < self.heap[i]:
-            smallest = left_child
-        if right_child < len(self.heap) and self.heap[right_child] < self.heap[smallest]:
-            smallest = right_child
-        if smallest != i:
-            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]
-            self.min_heapify(smallest)
-
-    # Return the minimum key in the heap
+    # Get minimum value
     def get_min(self):
-        if len(self.heap) > 0:
-            return self.heap[0]
-        return None
+        if self.least is None:
+            return None
+        return self.least.value
 
-    # check if the heap is empty
-    def is_empty(self):
-        return len(self.heap) == 0
+    # Extract the minimum value
+    def extract_min(self):
+        smallest = self.least
+        if smallest is not None:
+            for child in smallest.child:
+                self.trees.append(child)
+            self.trees.remove(smallest)
+            if not self.trees:
+                self.least = None
+            else:
+                self.least = self.trees[0]
+                self.consolidate()
+            self.count = self.count - 1
+            return smallest.value
 
-    def decrease_key(self, vertex, new_distance):
-        # Find the index of the vertex in the heap
-        index = None
-        for i, (distance, v) in enumerate(self.heap):
-            if v == vertex:
-                index = i
-                break
+    # Consolidate the tree
+    def consolidate(self):
+        aux = (floor_log(self.count) + 1) * [None]
 
-        # If the vertex is not found, do nothing
-        if index is None:
-            return
+        while self.trees:
+            x = self.trees[0]
+            order = x.order
+            self.trees.remove(x)
+            while aux[order] is not None:
+                y = aux[order]
+                if x.value > y.value:
+                    x, y = y, x
+                x.add_at_end(y)
+                aux[order] = None
+                order = order + 1
+            aux[order] = x
 
-        # Update the distance of the vertex and adjust the heap if necessary
-        if new_distance < self.heap[index][0]:
-            self.heap[index] = (new_distance, vertex)
-            while index > 0 and self.heap[self.parent(index)][0] > self.heap[index][0]:
-                self.heap[self.parent(index)], self.heap[index] = self.heap[index], self.heap[self.parent(index)]
-                index = self.parent(index)
+        self.least = None
+        for k in aux:
+            if k is not None:
+                self.trees.append(k)
+                if (self.least is None
+                        or k.value < self.least.value):
+                    self.least = k
+
+
+def floor_log(x):
+    return frexp(x)[1] - 1
 
 
 def haversine_formula_distance(lat1, lon1, lat2, lon2):
@@ -195,16 +204,12 @@ def find_shortest_path(graph, source_airport, destination_airport):
     # Initialize a dictionary to store the previous airport for each airport
     previous_airport = {}
 
-    # Initialize priority queue with min-heap
-    # priority_q = MinHeap()
-    # priority_q.insert((0, source_airport))
+    # Initialise priority queue with fibonacci heap
+    f_heap = FibonacciHeap()
+    f_heap.insert_node((0, source_airport))
 
-    # Initialise priority queue with heapq
-    priority_q = [(0, source_airport)]
-
-    while priority_q:
-        # current_distance, current_airport = priority_q.extract_min()
-        current_distance, current_airport = heapq.heappop(priority_q)
+    while f_heap.count > 0:
+        current_distance, current_airport = f_heap.extract_min()
 
         # If the destination airport is reached, stop
         if current_airport == destination_airport:
@@ -218,8 +223,7 @@ def find_shortest_path(graph, source_airport, destination_airport):
                 distances[neighbour] = distance_to_neighbour
                 #  Update the path taken
                 previous_airport[neighbour] = current_airport
-                # priority_q.decrease_key(distance_to_neighbour, neighbour)
-                heapq.heappush(priority_q, (distance_to_neighbour, neighbour))
+                f_heap.insert_node((distance_to_neighbour, neighbour))
 
     # Initialise an array to store shortest path taken to reach destination
     shortest_path = []

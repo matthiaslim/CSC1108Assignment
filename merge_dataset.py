@@ -39,7 +39,7 @@ def calculate_distance():
                     "Source Longitude",
                     "Destination Latitude", "Destination Longitude"]
     data['Distance'] = data.apply(
-        lambda row: flight_algos.haversine_formula_distance(row['Source Latitude'], row['Source Longitude'],
+        lambda row: flight_tracker.haversine_formula_distance(row['Source Latitude'], row['Source Longitude'],
                                                row['Destination Latitude'], row['Destination Longitude']), axis=1)
 
     data.to_csv("europe_flight_dataset.csv", index=False)
