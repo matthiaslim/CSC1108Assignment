@@ -78,7 +78,11 @@ class AirportGraph:
                                               self.airports[destination_airport].longitude)
 
     def group_airports_by_country(self):
-        airports_df = pd.DataFrame(self.airports)
+        data = []
+        for iata, airport in self.airports.items():
+            data.append(
+                {'IATA': airport.iata_code, 'Name': airport.name, 'City': airport.city, 'Country': airport.country})
+        airports_df = pd.DataFrame(data)
         airports_df['Name_IATA'] = airports_df['Name'] + ' (' + airports_df['IATA'] + ')'
         airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
         return airports_by_country
@@ -252,4 +256,5 @@ def find_nearest_airport(graph, destination_airport):
 
 # test
 graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+graph.group_airports_by_country()
 print(find_shortest_path(graph, "LHR", "CRV"))
