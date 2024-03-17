@@ -226,7 +226,7 @@ def find_shortest_path(graph, source_airport, destination_airport):
         # Restart the search from the source airport to the nearest airport
         return find_shortest_path(graph, source_airport, destination_airport)
 
-    # Initialise an array to store shortest path taken to reach destination
+    # Initialise an list to store shortest path taken to reach destination
     shortest_path = []
     current_airport = destination_airport
     # Reconstruct the shortest path using the previous airport dictionary
@@ -235,8 +235,12 @@ def find_shortest_path(graph, source_airport, destination_airport):
         current_airport = previous_airport[current_airport]
     shortest_path.append(source_airport)
 
-    # Return the shortest path to the destination airport
-    return shortest_path[::-1]
+    if len(shortest_path) < 2:
+        # If the list only contains source airport, return None
+        return None
+    else:
+        # Else, return the shortest path to the destination airport
+        return shortest_path[::-1]
 
 
 def find_nearest_airport(graph, destination_airport):
@@ -255,6 +259,6 @@ def find_nearest_airport(graph, destination_airport):
 
 
 # test
-graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
-graph.group_airports_by_country()
-print(find_shortest_path(graph, "LHR", "CRV"))
+# graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+# print(graph.airports.items())
+# print(find_shortest_path(graph, "SUR", "CRV"))
