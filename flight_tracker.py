@@ -195,6 +195,12 @@ def read_airports_from_csv():
 
 # find the shortest path between two airports using Dijkstra's shortest path algorithm
 def find_shortest_path(graph, source_airport, destination_airport):
+    # Check if flight data from source airport exist in the graph
+    for flight in graph.flights:
+        if source_airport not in flight.source_airport:
+            print(f"Flights from '{source_airport}' do not exist.")
+            return None
+
     # Clear shortest path memory
     distances = {}
     previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
@@ -224,6 +230,17 @@ def find_shortest_path(graph, source_airport, destination_airport):
                 previous_airport[neighbour] = current_airport
                 f_heap.insert_node((distance_to_neighbour, neighbour))
 
+    # Check if there are direct flights from the source to the destination airport
+    if distances[destination_airport] == float('inf'):
+        print(f"No direct flights from {source_airport} to {destination_airport}.")
+        # Find the nearest airport to the destination recursively
+        nearest_airport = find_nearest_airport(graph, destination_airport)
+        print(f"Rerouting to nearest airport {nearest_airport}.")
+        destination_airport = nearest_airport
+
+        # Restart the search from the source airport to the nearest airport
+        return find_shortest_path(graph, source_airport, destination_airport)
+
     # Initialise an array to store shortest path taken to reach destination
     shortest_path = []
     current_airport = destination_airport
@@ -237,6 +254,21 @@ def find_shortest_path(graph, source_airport, destination_airport):
     return shortest_path[::-1]
 
 
+def find_nearest_airport(graph, destination_airport):
+    # Find the nearest airport to the destination
+    nearest_distance = float('inf')
+    nearest_airport = None
+
+    for airport in graph.airports:
+        if airport != destination_airport:
+            distance = graph.calculate_distance(airport, destination_airport)
+            if distance < nearest_distance:
+                nearest_distance = distance
+                nearest_airport = airport
+
+    return nearest_airport
+
+
 # test
 graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(find_shortest_path(graph, "GLA", "HEL"))
+print(find_shortest_path(graph, "CRV", "LHR"))
