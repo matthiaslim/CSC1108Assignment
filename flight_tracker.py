@@ -1,5 +1,6 @@
 import pandas as pd
-import os
+import heapq
+from math import radians, sin, cos, asin, sqrt
 
 
 class AirportNode:
@@ -11,57 +12,73 @@ class AirportNode:
         if latitude in range(-90, 90):
             self.latitude = latitude  # Latitude of the airport's location
         else:
-            print("Invalid latitude value! (Must be between -90 and 90)")
-            return
+            raise ValueError("Invalid latitude value! (Must be between -90 and 90)")
         if longitude in range(-180, 180):
             self.longitude = longitude  # Longitude of the airport's location
         else:
-            print("Invalid longitude value! (Must be between -180 and 180")
-            return
+            raise ValueError("Invalid longitude value! (Must be between -180 and 180")
+
+
+class RouteEdge:
+    def __init__(self, source_airport, destination_airport, distance):
+        self.source_airport = source_airport
+        self.destination_airport = destination_airport
+        self.distance = distance
 
 
 class AirportGraph:
-    adjList = {}
-    distances = {}
+    airports = {}  # Dictionary to store airports and coordinates
+    flights = []  # List to store flight routes and distances
 
-    def __init__(self, file):
+    def __init__(self, airports_file, flights_file):
         try:
-            flight_routes = pd.read_csv(file)
-            for index, row in flight_routes.iterrows():
-                source_airport = row['Source Airport IATA']
-                destination_airport = row['Destination Airport IATA']
-                distance = row['Distance']
+            self.load_airports(airports_file)
+            self.load_flights(flights_file)
 
-                # Add the destination airport to the adjacency list of the source airport
-                if source_airport in self.adjList:
-                    self.adjList[source_airport].append(destination_airport)
-                else:
-                    self.adjList[source_airport] = []
-                    self.adjList[source_airport].append(destination_airport)
-
-                # Add the source airport to the adjacency list of the destination airport
-                if destination_airport in self.adjList:
-                    self.adjList[destination_airport].append(source_airport)
-                else:
-                    self.adjList[destination_airport] = []
-                    self.adjList[destination_airport].append(source_airport)
-
-                # Store the distance between the airports
-                key = tuple(sorted([source_airport, destination_airport]))
-                self.distances[key] = distance
-        except FileNotFoundError:
-            print("File not found: " + file)
+        except FileNotFoundError as e:
+            print("File not found: " + str(e))
         except Exception as e:
             print("An error has occurred: " + str(e))
 
+    def load_airports(self, airports_file):
+        airports_df = pd.read_csv(airports_file)
+
+        for index, row in airports_df.iterrows():
+            self.add_airport(row['IATA'], row['Latitude'], row['Longitude'])
+
+    def load_flights(self, flights_file):
+        flights_df = pd.read_csv(flights_file)
+
+        for index, row in flights_df.iterrows():
+            self.add_flight(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'])
+
+    def add_airport(self, code, lat, lon):
+        self.airports[code] = (lat, lon)
+
+    def add_flight(self, source_airport, destination_airport, distance):
+        self.flights.append((source_airport, destination_airport, distance))
+
+    def get_neighbors(self, airport):
+        # Get neighboring airports for a given airport
+        return [flight[1] for flight in self.flights if flight[0] == airport]
+
     def get_distance(self, source_airport, destination_airport):
         # Get the distance between two airports
-        key = tuple(sorted([source_airport, destination_airport]))
-        return self.distances.get(key)
+        for flight in self.flights:
+            if flight[0] == source_airport and flight[1] == destination_airport:
+                return flight[2]  # Return distance between the two airports
+        return None  # Return None is distance is not found
 
-    def adj(self, airport):
-        # Return the adjacency list of the given airport
-        return self.adjList[airport]
+    # Calculate distance between two airports without a direct flight
+    def calculate_distance(self, source_airport, destination_airport):
+        flight_distance = self.get_distance(source_airport, destination_airport)
+        if flight_distance is not None:
+            return flight_distance
+        else:
+            return haversine_formula_distance(self.airports[source_airport][0],
+                                              self.airports[source_airport][1],
+                                              self.airports[destination_airport][0],
+                                              self.airports[destination_airport][1])
 
 
 class MinHeap:
@@ -133,6 +150,18 @@ class MinHeap:
                 index = self.parent(index)
 
 
+def haversine_formula_distance(lat1, lon1, lat2, lon2):
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 6371  # radius of earth in kilometers
+    return c * r
+
+
 def group_airports_by_country(airports_df):
     airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
     return airports_by_country
@@ -160,32 +189,37 @@ def read_airports_from_csv():
 # find the shortest path between two airports using Dijkstra's shortest path algorithm
 def find_shortest_path(graph, source_airport, destination_airport):
     # Initialize distances to all airports as infinity
-    distances = {airport: float('inf') for airport in graph.adjList}
+    distances = {airport: float('inf') for airport in graph.airports}
     distances[source_airport] = 0
 
     # Initialize a dictionary to store the previous airport for each airport
     previous_airport = {}
 
     # Initialize priority queue with min-heap
-    pq = MinHeap()
-    pq.insert((0, source_airport))
+    # priority_q = MinHeap()
+    # priority_q.insert((0, source_airport))
 
-    while not pq.is_empty():
-        current_distance, current_airport = pq.extract_min()
+    # Initialise priority queue with heapq
+    priority_q = [(0, source_airport)]
+
+    while priority_q:
+        # current_distance, current_airport = priority_q.extract_min()
+        current_distance, current_airport = heapq.heappop(priority_q)
 
         # If the destination airport is reached, stop
         if current_airport == destination_airport:
             break
 
         # Visit each neighboring airport of the current airport
-        for neighbour in graph.adj(current_airport):
-            distance_to_neighbour = current_distance + graph.get_distance(current_airport, neighbour)
+        for neighbour in graph.get_neighbors(current_airport):
+            distance_to_neighbour = current_distance + graph.calculate_distance(current_airport, neighbour)
             # Update the distance to the neighbor if it's smaller than the recorded distance
             if distance_to_neighbour < distances[neighbour]:
                 distances[neighbour] = distance_to_neighbour
                 #  Update the path taken
                 previous_airport[neighbour] = current_airport
-                pq.decrease_key(distance_to_neighbour, neighbour)
+                # priority_q.decrease_key(distance_to_neighbour, neighbour)
+                heapq.heappush(priority_q, (distance_to_neighbour, neighbour))
 
     # Initialise an array to store shortest path taken to reach destination
     shortest_path = []
@@ -197,9 +231,9 @@ def find_shortest_path(graph, source_airport, destination_airport):
     shortest_path.append(source_airport)
 
     # Return the shortest path to the destination airport
-    return shortest_path
+    return shortest_path[::-1]
 
 
 # test
-graph = AirportGraph("europe_flight_dataset.csv")
-print(find_shortest_path(graph, "CGN", "LHR"))
+graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+print(find_shortest_path(graph, "NTE", "LHR"))

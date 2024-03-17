@@ -1,5 +1,5 @@
 import pandas as pd
-from math import radians, cos, sin, asin, sqrt
+import flight_tracker
 
 
 def merge_city_country(airports_df, routes_df):
@@ -32,18 +32,6 @@ def merge_lat_lon(airports_df, routes_df):
     merged_data.to_csv("europe_flights_without_distance.csv", index=False)
 
 
-def haversine_formula_distance(lat1, lon1, lat2, lon2):
-    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-
-    # haversine formula
-    dlon = lon2 - lon1
-    dlat = lat2 - lat1
-    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
-    c = 2 * asin(sqrt(a))
-    r = 6371  # radius of earth in kilometers
-    return c * r
-
-
 def calculate_distance():
     data = pd.read_csv("europe_flights_without_distance.csv")
     data.columns = ["Airline", "Airline ID", "Source Airport IATA", "Destination Airport IATA",
@@ -51,7 +39,7 @@ def calculate_distance():
                     "Source Longitude",
                     "Destination Latitude", "Destination Longitude"]
     data['Distance'] = data.apply(
-        lambda row: haversine_formula_distance(row['Source Latitude'], row['Source Longitude'],
+        lambda row: flight_algos.haversine_formula_distance(row['Source Latitude'], row['Source Longitude'],
                                                row['Destination Latitude'], row['Destination Longitude']), axis=1)
 
     data.to_csv("europe_flight_dataset.csv", index=False)
