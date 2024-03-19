@@ -10,6 +10,11 @@ class AirportNode:
         self.country = country  # Country where the airport is located
         self.latitude = latitude  # Latitude of the airport's location
         self.longitude = longitude  # Longitude of the airport's location
+        self.routes = []  # list to store all available routes
+
+    def add_route_edge(self, destination_airport, distance):
+        route_edge = RouteEdge(self.iata_code, destination_airport, distance)
+        self.routes.append(route_edge)
 
 
 class RouteEdge:
@@ -19,9 +24,8 @@ class RouteEdge:
         self.distance = distance
 
 
-class AirportGraph:
+class FlightGraph:
     airports = {}  # Dictionary to store airports and coordinates
-    flights = []  # List to store flight routes and distances
 
     def __init__(self, airports_file, flights_file):
         try:
@@ -45,26 +49,41 @@ class AirportGraph:
         flights_df = pd.read_csv(flights_file)
 
         for index, row in flights_df.iterrows():
-            flight_route = RouteEdge(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'])
-            self.add_flight(row['Source Airport IATA'], row['Destination Airport IATA'], flight_route)
+            self.add_flight_route(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'])
 
     def add_airport(self, code, airport):
         self.airports[code] = airport
 
-    def add_flight(self, source_airport, destination_airport, flight_route):
-        if source_airport and destination_airport:
-            self.flights.append(flight_route)
+    def add_flight_route(self, source_airport, destination_airport, distance):
+        if source_airport in self.airports and destination_airport in self.airports:
+            source_node = self.airports[source_airport]
+            source_node.add_route_edge(destination_airport, distance)
+
+    def get_routes(self, airport):
+        return self.airports[airport].routes
 
     def get_neighbors(self, airport):
         # Get neighboring airports for a given airport
-        return [flight.destination_airport for flight in self.flights if flight.source_airport == airport]
+        if airport in self.airports:
+            return [route.destination_airport for route in self.airports[airport].routes]
+        else:
+            return []
 
     def get_distance(self, source_airport, destination_airport):
-        # Get the distance between two airports
-        for flight in self.flights:
-            if flight.source_airport == source_airport and flight.destination_airport == destination_airport:
-                return flight.distance  # Return distance between the two airports
-        return None  # Return None is distance is not found
+        # Check if source and destination airports are valid
+        if source_airport not in self.airports or destination_airport not in self.airports:
+            return None
+
+        # Get routes for the source airport
+        source_routes = self.airports[source_airport].routes
+
+        # Iterate over routes to find a matching destination airport
+        for route in source_routes:
+            if route.destination_airport == destination_airport:
+                return route.distance
+
+        # If no matching route is found, return None
+        return None
 
     # Calculate distance between two airports without a direct flight
     def calculate_distance(self, source_airport, destination_airport):
@@ -182,7 +201,7 @@ def haversine_formula_distance(lat1, lon1, lat2, lon2):
 # find the shortest path between two airports using Dijkstra's shortest path algorithm
 def find_shortest_path(graph, source_airport, destination_airport):
     # Check if flight data from source airport exist in the graph
-    if not any(flight.source_airport == source_airport for flight in graph.flights):
+    if not graph.get_routes(source_airport):
         print(f"Flights from '{source_airport}' do not exist.")
         return None
 
@@ -259,6 +278,6 @@ def find_nearest_airport(graph, destination_airport):
 
 
 # test
-# graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
-# print(graph.airports.items())
-# print(find_shortest_path(graph, "SUR", "CRV"))
+graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
+# print(graph.get_neighbors("LHR"))
+print(find_shortest_path(graph, "LHR", "CRV"))
