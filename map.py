@@ -12,7 +12,7 @@ import folium.plugins
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.AirportGraph = flight_tracker.AirportGraph("europe_airports.csv","europe_flight_dataset.csv")
+        self.AirportGraph = flight_tracker.FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
         # print(self.AirportGraph.group_airports_by_country())
 
         self.setWindowTitle("Airport Locator")
@@ -183,7 +183,7 @@ class MapWindow(QMainWindow):
 
     def show_airport_on_map(self):
         source_iata, destination_iata = self.search_flights()
-        airport_graph = flight_tracker.AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+        airport_graph = self.AirportGraph
         dijkstra_path = flight_tracker.find_shortest_path(airport_graph, source_iata, destination_iata)
         print(dijkstra_path)
         airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
