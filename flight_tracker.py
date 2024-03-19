@@ -261,6 +261,7 @@ def find_shortest_path(graph, source_airport, destination_airport):
         # Else, return the shortest path to the destination airport
         return shortest_path[::-1]
 
+# find path using depth first search
 
 def find_nearest_airport(graph, destination_airport):
     # Find the nearest airport to the destination
@@ -278,6 +279,5 @@ def find_nearest_airport(graph, destination_airport):
 
 
 # test
-# graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-# print(graph.get_neighbors("LHR"))
-# print(find_shortest_path(graph, "LHR", "CRV"))
+# graph = AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+# print(find_shortest_path(graph, "NTE", "LHR"))
