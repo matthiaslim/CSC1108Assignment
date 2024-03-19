@@ -1,21 +1,24 @@
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, \
-    QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox
+    QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox, QMessageBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import flight_tracker
 import re
+import folium.plugins
 
 
 class MapWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.AirportGraph = flight_tracker.AirportGraph("europe_airports.csv","europe_flight_dataset.csv")
+        # print(self.AirportGraph.group_airports_by_country())
 
         self.setWindowTitle("Airport Locator")
         self.setGeometry(100, 100, 1920, 1080)
 
-        self.country_data = flight_tracker.airports_data()
+        self.country_data = self.AirportGraph.group_airports_by_country()
 
         # Data for testing purposes
         # self.country_data = {'Albania': ['Tirana International Airport Mother Teresa (TIA)',
@@ -121,7 +124,8 @@ class MapWindow(QMainWindow):
         input_frame.setLayout(input_layout)
 
         # Create Folium map
-        self.map = folium.Map(location=[34.0479, 100.6197], zoom_start=4, tiles="cartodb positron")
+        self.map = folium.Map(location=(50.170824, 15.087472), zoom_start=4, tiles="cartodb positron")
+        self.map.save("map.html")
 
         # Create WebEngineView to display the map
 
@@ -179,18 +183,25 @@ class MapWindow(QMainWindow):
 
     def show_airport_on_map(self):
         source_iata, destination_iata = self.search_flights()
-        airport_map = folium.Map(location=[34.0479, 100.6197], zoom_start=4, tiles="cartodb positron")
-        node_airport = flight_tracker.read_airports_from_csv()
-        source_airport = next((airport for airport in node_airport if airport.iata_code == source_iata), None)
-        destination_airport = next((airport for airport in node_airport if airport.iata_code == destination_iata), None)
-        if source_airport:
-            text = f"Airport Name:{source_airport.name}, Airport Code:{source_airport.iata_code}"
-            folium.Marker(location=[source_airport.latitude, source_airport.longitude], popup=text,
-                          icon=folium.Icon(color="green")).add_to(airport_map)
-        if destination_airport:
-            text = f"Airport Name:{destination_airport.name}, Airport Code:{destination_airport.iata_code}"
-            folium.Marker(location=[destination_airport.latitude, destination_airport.longitude], popup=text,
-                          icon=folium.Icon(color="red")).add_to(airport_map)
+        airport_graph = flight_tracker.AirportGraph("europe_airports.csv", "europe_flight_dataset.csv")
+        dijkstra_path = flight_tracker.find_shortest_path(airport_graph, source_iata, destination_iata)
+        print(dijkstra_path)
+        airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
+        node_airport = airport_graph.airports
+        print(node_airport)
+        edge_coords = []
+        if dijkstra_path is None:
+            QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
+            return
+        for iata in dijkstra_path:
+            airport_path = node_airport.get(iata)
+            if airport_path:
+                text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
+                              icon=folium.Icon(color="blue")).add_to(airport_map)
+                edge_coords.append((airport_path.latitude, airport_path.longitude))
+        folium.plugins.AntPath(locations=edge_coords, color="red", weight=2.5, opacity=1).add_to(airport_map)
+
         airport_map.save('airport_map.html')
         self.web_view.setHtml(open("airport_map.html").read())
 
