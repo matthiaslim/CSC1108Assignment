@@ -1,6 +1,6 @@
 from collections import deque
 import pandas as pd
-from math import radians, sin, cos, asin, sqrt, frexp
+from math import radians, sin, cos, asin, sqrt, frexp, ceil
 
 
 class AirportNode:
@@ -230,6 +230,27 @@ class FlightGraph:
         # If destination airport is not reachable
         return None, -1  # or any appropriate indicator
 
+    def cheapest_flight_astar(self, source_airport, destination_airport):
+        # Check if flight data from source airport exist in the graph
+        if not self.get_routes(source_airport):
+            print(f"Flights from '{source_airport}' do not exist.")
+            return None
+
+        # Initialise priority queue with fibonacci heap
+        f_heap = FibonacciHeap()
+        f_heap.insert_node((0, source_airport))
+        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
+        g_score = {iata: float('inf') for iata in
+                   self.airports}  # Dict to store the actual cost from source to each node
+        g_score[source_airport] = 0
+
+        while f_heap.count > 0:
+            current_cost, current_airport = f_heap.extract_min()
+
+            # If the destination airport is reached, stop
+            if current_airport == destination_airport:
+                break
+
 
 # Creating fibonacci tree
 class FibonacciTree:
@@ -322,6 +343,30 @@ def haversine_formula_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
+# function to calculate flight cost based on the distance in kilometres
+def calculate_flight_cost(distance):
+    base_cost = 25  # set the base cost of flights to be $25
+    cost_per_km = 0  # initialise a cost per kilometre that would change based on the distance travelled
+
+    if distance < 600:
+        # Shortest flights (under 600km)
+        cost_per_km = 0.19
+    elif distance < 1000:
+        # Short haul (600km to under 1000km)
+        cost_per_km = 0.2
+    elif distance < 1500:
+        # Medium haul (1000km to under 1500km)
+        cost_per_km = 0.22
+    else:
+        # Long-haul (1500km and above)
+        cost_per_km = 0.25
+
+    # calculate the total cost of the flight as base cost with the added total cost per km
+    total_cost = base_cost + (distance * cost_per_km)
+    return ceil(total_cost)  # return the total cost rounded up to the nearest whole number
+
+
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(graph.least_layovers_bfs("LHR", "CRA"))
+# print(graph.least_layovers_bfs("LHR", "CRA"))
+# print(graph.find_shortest_path("LHR", "CRA"))

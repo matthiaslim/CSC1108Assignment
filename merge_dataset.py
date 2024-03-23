@@ -40,7 +40,20 @@ def calculate_distance():
                     "Destination Latitude", "Destination Longitude"]
     data['Distance'] = data.apply(
         lambda row: flight_tracker.haversine_formula_distance(row['Source Latitude'], row['Source Longitude'],
-                                               row['Destination Latitude'], row['Destination Longitude']), axis=1)
+                                                              row['Destination Latitude'],
+                                                              row['Destination Longitude']), axis=1)
+
+    data.to_csv("europe_flight_dataset_without_cost.csv", index=False)
+
+
+def calculate_cost():
+    data = pd.read_csv("europe_flight_dataset_without_cost.csv")
+    data.columns = ["Airline", "Airline ID", "Source Airport IATA", "Destination Airport IATA",
+                    "Source City", "Source Country", "Destination City", "Destination Country", "Source Latitude",
+                    "Source Longitude",
+                    "Destination Latitude", "Destination Longitude", "Distance"]
+    data['Estimated Cost'] = data.apply(
+        lambda row: flight_tracker.calculate_flight_cost(row['Distance']), axis=1)
 
     data.to_csv("europe_flight_dataset.csv", index=False)
 
@@ -51,9 +64,9 @@ def main():
 
     modified_europe_routes = merge_city_country(europe_airports, europe_routes)
 
-    print(modified_europe_routes)
     merge_lat_lon(europe_airports, modified_europe_routes)
     calculate_distance()
+    calculate_cost()
 
 
 if __name__ == "__main__":
