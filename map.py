@@ -184,7 +184,7 @@ class MapWindow(QMainWindow):
     def show_airport_on_map(self):
         source_iata, destination_iata = self.search_flights()
         airport_graph = self.AirportGraph
-        dijkstra_path = flight_tracker.find_shortest_path(airport_graph, source_iata, destination_iata)
+        dijkstra_path = airport_graph.find_shortest_path(source_iata, destination_iata)
         print(dijkstra_path)
         airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
         node_airport = airport_graph.airports
