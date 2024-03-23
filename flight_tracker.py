@@ -221,7 +221,7 @@ class FlightGraph:
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append(neighbor)
-                    path_with_layovers[neighbor] = (current_airport, path_with_layovers[current_airport][1] + 1)
+                    path_with_layovers[neighbor] = (current_airport, path_with_layovers[current_airport][1] + 1 if neighbor != destination_airport else 0)
 
         # If destination airport is not reachable
         return None, -1  # or any appropriate indicator
