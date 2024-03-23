@@ -1,3 +1,4 @@
+from collections import deque
 import pandas as pd
 from math import radians, sin, cos, asin, sqrt, frexp
 
@@ -25,7 +26,7 @@ class RouteEdge:
 
 
 class FlightGraph:
-    airports = {}  # Dictionary to store airports and coordinates
+    airports = {}  # Adjacency list to store airports as nodes flight routes as edges
 
     def __init__(self, airports_file, flights_file):
         try:
@@ -105,6 +106,125 @@ class FlightGraph:
         airports_df['Name_IATA'] = airports_df['Name'] + ' (' + airports_df['IATA'] + ')'
         airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
         return airports_by_country
+
+    # find the shortest path between two airports using Dijkstra's shortest path algorithm
+    def find_shortest_path(self, source_airport, destination_airport):
+        # Check if flight data from source airport exist in the graph
+        if not self.get_routes(source_airport):
+            print(f"Flights from '{source_airport}' do not exist.")
+            return None
+
+        # Clear shortest path memory
+        distances = {}
+        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
+
+        # Initialize distances to all airports as infinity
+        distances = {airport: float('inf') for airport in self.airports}
+        distances[source_airport] = 0
+
+        # Initialise priority queue with fibonacci heap
+        f_heap = FibonacciHeap()
+        f_heap.insert_node((0, source_airport))
+
+        while f_heap.count > 0:
+            current_distance, current_airport = f_heap.extract_min()
+
+            # If the destination airport is reached, stop
+            if current_airport == destination_airport:
+                break
+
+            # Visit each neighboring airport of the current airport
+            for neighbour in self.get_neighbors(current_airport):
+                distance_to_neighbour = current_distance + self.calculate_distance(current_airport, neighbour)
+                # Update the distance to the neighbor if it's smaller than the recorded distance
+                if distance_to_neighbour < distances[neighbour]:
+                    distances[neighbour] = distance_to_neighbour
+                    #  Update the path taken
+                    previous_airport[neighbour] = current_airport
+                    f_heap.insert_node((distance_to_neighbour, neighbour))
+
+        # Check if there are direct flights from the source to the destination airport
+        if distances[destination_airport] == float('inf'):
+            print(f"No direct flights from {source_airport} to {destination_airport}.")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.find_shortest_path(source_airport, destination_airport)
+
+        # Initialise a list to store shortest path taken to reach destination
+        shortest_path = []
+        current_airport = destination_airport
+        # Reconstruct the shortest path using the previous airport dictionary
+        while current_airport != source_airport:
+            shortest_path.append(current_airport)
+            current_airport = previous_airport[current_airport]
+        shortest_path.append(source_airport)
+
+        if len(shortest_path) < 2:
+            # If the list only contains source airport, return None
+            return None
+        else:
+            # Else, return the shortest path to the destination airport
+            return shortest_path[::-1]
+
+    def find_nearest_airport(self, destination_airport):
+        # Find the nearest airport to the destination
+        nearest_distance = float('inf')
+        nearest_airport = None
+
+        for airport in self.airports:
+            if airport != destination_airport:
+                distance = self.calculate_distance(airport, destination_airport)
+                if distance < nearest_distance:
+                    nearest_distance = distance
+                    nearest_airport = airport
+
+        return nearest_airport
+
+    # Function to perform Breadth First Search on the flight graph to return path with the least route edges
+    def least_layovers_bfs(self, source_airport, destination_airport):
+        # Create a queue for BFS
+        queue = deque()
+        visited = set()
+
+        # Initialize a dictionary to track the path and the number of layovers
+        path_with_layovers = {source_airport: (None, 0)}  # (Previous airport, layover count)
+
+        # Mark the source airport as visited and enqueue it along with the initial layover count of 0
+        queue.append(source_airport)
+        visited.add(source_airport)
+
+        # Iterate over the queue
+        while queue:
+            # Dequeue a vertex from the queue
+            current_airport = queue.popleft()
+
+            # Check if the current airport is the destination
+            if current_airport == destination_airport:
+                # Reconstruct the path from the destination to the source
+                path = []
+                layovers = path_with_layovers[current_airport][1]
+                while current_airport:
+                    path.append(current_airport)
+                    current_airport = path_with_layovers[current_airport][0]
+                path.reverse()
+                return path, layovers  # Return the path and the number of layovers
+
+            # Get all adjacent airports (neighbors) of the current airport
+            adjacent_airports = [route.destination_airport for route in self.airports[current_airport].routes]
+
+            # Enqueue neighboring airports that have not been visited
+            for neighbor in adjacent_airports:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+                    path_with_layovers[neighbor] = (current_airport, path_with_layovers[current_airport][1] + 1)
+
+        # If destination airport is not reachable
+        return None, -1  # or any appropriate indicator
 
 
 # Creating fibonacci tree
@@ -198,86 +318,6 @@ def haversine_formula_distance(lat1, lon1, lat2, lon2):
     return c * r
 
 
-# find the shortest path between two airports using Dijkstra's shortest path algorithm
-def find_shortest_path(graph, source_airport, destination_airport):
-    # Check if flight data from source airport exist in the graph
-    if not graph.get_routes(source_airport):
-        print(f"Flights from '{source_airport}' do not exist.")
-        return None
-
-    # Clear shortest path memory
-    distances = {}
-    previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
-
-    # Initialize distances to all airports as infinity
-    distances = {airport: float('inf') for airport in graph.airports}
-    distances[source_airport] = 0
-
-    # Initialise priority queue with fibonacci heap
-    f_heap = FibonacciHeap()
-    f_heap.insert_node((0, source_airport))
-
-    while f_heap.count > 0:
-        current_distance, current_airport = f_heap.extract_min()
-
-        # If the destination airport is reached, stop
-        if current_airport == destination_airport:
-            break
-
-        # Visit each neighboring airport of the current airport
-        for neighbour in graph.get_neighbors(current_airport):
-            distance_to_neighbour = current_distance + graph.calculate_distance(current_airport, neighbour)
-            # Update the distance to the neighbor if it's smaller than the recorded distance
-            if distance_to_neighbour < distances[neighbour]:
-                distances[neighbour] = distance_to_neighbour
-                #  Update the path taken
-                previous_airport[neighbour] = current_airport
-                f_heap.insert_node((distance_to_neighbour, neighbour))
-
-    # Check if there are direct flights from the source to the destination airport
-    if distances[destination_airport] == float('inf'):
-        print(f"No direct flights from {source_airport} to {destination_airport}.")
-        # Find the nearest airport to the destination recursively
-        nearest_airport = find_nearest_airport(graph, destination_airport)
-        print(f"Rerouting to nearest airport {nearest_airport}.")
-        destination_airport = nearest_airport
-
-        # Restart the search from the source airport to the nearest airport
-        return find_shortest_path(graph, source_airport, destination_airport)
-
-    # Initialise a list to store shortest path taken to reach destination
-    shortest_path = []
-    current_airport = destination_airport
-    # Reconstruct the shortest path using the previous airport dictionary
-    while current_airport != source_airport:
-        shortest_path.append(current_airport)
-        current_airport = previous_airport[current_airport]
-    shortest_path.append(source_airport)
-
-    if len(shortest_path) < 2:
-        # If the list only contains source airport, return None
-        return None
-    else:
-        # Else, return the shortest path to the destination airport
-        return shortest_path[::-1]
-
-
-def find_nearest_airport(graph, destination_airport):
-    # Find the nearest airport to the destination
-    nearest_distance = float('inf')
-    nearest_airport = None
-
-    for airport in graph.airports:
-        if airport != destination_airport:
-            distance = graph.calculate_distance(airport, destination_airport)
-            if distance < nearest_distance:
-                nearest_distance = distance
-                nearest_airport = airport
-
-    return nearest_airport
-
-
 # test
-# graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-# print(graph.get_neighbors("LHR"))
-# print(find_shortest_path(graph, "LHR", "CRV"))
+graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
+print(graph.least_layovers_bfs("LHR", "AMS"))
