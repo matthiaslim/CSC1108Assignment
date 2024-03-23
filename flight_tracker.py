@@ -1,6 +1,7 @@
+import heapq
 from collections import deque
 import pandas as pd
-from math import radians, sin, cos, asin, sqrt, frexp, ceil
+from math import radians, sin, cos, asin, sqrt, ceil
 
 
 class AirportNode:
@@ -143,12 +144,11 @@ class FlightGraph:
         distances = {airport: float('inf') for airport in self.airports}
         distances[source_airport] = 0
 
-        # Initialise priority queue with fibonacci heap
-        f_heap = FibonacciHeap()
-        f_heap.insert_node((0, source_airport))
+        # Initialize priority queue with a simple list
+        priority_queue = [(0, source_airport)]
 
-        while f_heap.count > 0:
-            current_distance, current_airport = f_heap.extract_min()
+        while priority_queue:
+            current_distance, current_airport = heapq.heappop(priority_queue)
 
             # If the destination airport is reached, stop
             if current_airport == destination_airport:
@@ -162,7 +162,7 @@ class FlightGraph:
                     distances[neighbour] = distance_to_neighbour
                     #  Update the path taken
                     previous_airport[neighbour] = current_airport
-                    f_heap.insert_node((distance_to_neighbour, neighbour))
+                    heapq.heappush(priority_queue, (distance_to_neighbour, neighbour))
 
         # Check if there are flights (direct/with stop) from the source to the destination airport
         if distances[destination_airport] == float('inf'):
@@ -257,10 +257,6 @@ class FlightGraph:
             print(f"Flights from '{source_airport}' do not exist.")
             return None
 
-        # Initialise priority queue with fibonacci heap
-        f_heap = FibonacciHeap()
-        f_heap.insert_node((0, source_airport))
-
         # Initialize a dictionary to store the previous airport for each airport
         previous_airport = {}
 
@@ -268,8 +264,11 @@ class FlightGraph:
         g_score = {iata: float('inf') for iata in self.airports}
         g_score[source_airport] = 0
 
-        while f_heap.count > 0:
-            current_cost, current_airport = f_heap.extract_min()
+        # Initialize priority queue with a simple list
+        priority_queue = [(0, source_airport)]
+
+        while priority_queue:
+            current_cost, current_airport = heapq.heappop(priority_queue)
 
             # If the destination airport is reached, stop
             if current_airport == destination_airport:
@@ -285,9 +284,9 @@ class FlightGraph:
                     # (using the heuristic, which is the estimated flight cost in this case)
                     h_score = self.get_flight_cost(current_airport, neighbour)
                     f_score = tentative_g_score + h_score
-                    #  Update the path taken
+                    # Update the path taken
                     previous_airport[neighbour] = current_airport
-                    f_heap.insert_node((f_score, neighbour))
+                    heapq.heappush(priority_queue, (f_score, neighbour))
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
@@ -304,85 +303,6 @@ class FlightGraph:
         else:
             # Else, return the shortest path to the destination airport
             return shortest_path[::-1], flight_cost
-
-
-# Creating fibonacci tree
-class FibonacciTree:
-    def __init__(self, value):
-        self.value = value
-        self.child = []
-        self.order = 0
-
-    # Adding tree at the end of the tree
-    def add_at_end(self, t):
-        self.child.append(t)
-        self.order = self.order + 1
-
-
-# Creating Fibonacci heap
-class FibonacciHeap:
-    def __init__(self):
-        self.trees = []
-        self.least = None
-        self.count = 0
-
-    # Insert a node
-    def insert_node(self, value):
-        new_tree = FibonacciTree(value)
-        self.trees.append(new_tree)
-        if self.least is None or value < self.least.value:
-            self.least = new_tree
-        self.count = self.count + 1
-
-    # Get minimum value
-    def get_min(self):
-        if self.least is None:
-            return None
-        return self.least.value
-
-    # Extract the minimum value
-    def extract_min(self):
-        smallest = self.least
-        if smallest is not None:
-            for child in smallest.child:
-                self.trees.append(child)
-            self.trees.remove(smallest)
-            if not self.trees:
-                self.least = None
-            else:
-                self.least = self.trees[0]
-                self.consolidate()
-            self.count = self.count - 1
-            return smallest.value
-
-    # Consolidate the tree
-    def consolidate(self):
-        aux = (floor_log(self.count) + 1) * [None]
-
-        while self.trees:
-            x = self.trees[0]
-            order = x.order
-            self.trees.remove(x)
-            while aux[order] is not None:
-                y = aux[order]
-                if x.value > y.value:
-                    x, y = y, x
-                x.add_at_end(y)
-                aux[order] = None
-                order = order + 1
-            aux[order] = x
-
-        self.least = None
-        for k in aux:
-            if k is not None:
-                self.trees.append(k)
-                if (self.least is None
-                        or k.value < self.least.value):
-                    self.least = k
-
-
-def floor_log(x):
-    return frexp(x)[1] - 1
 
 
 def haversine_formula_distance(lat1, lon1, lat2, lon2):
@@ -423,5 +343,5 @@ def calculate_flight_cost(distance):
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
 # print(graph.least_layovers_bfs("LHR", "AYT"))
-# print(graph.find_shortest_path("LHR", "AYT"))
+print(graph.find_shortest_path("LHR", "AYT"))
 print(graph.cheapest_flight_astar("LHR", "AYT"))
