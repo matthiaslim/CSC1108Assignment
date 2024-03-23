@@ -221,7 +221,11 @@ class FlightGraph:
                 if neighbor not in visited:
                     visited.add(neighbor)
                     queue.append(neighbor)
-                    path_with_layovers[neighbor] = (current_airport, path_with_layovers[current_airport][1] + 1 if neighbor != destination_airport else 0)
+                    # Increment the layover count only if the neighbor is not the destination airport
+                    layover_count = path_with_layovers[current_airport][1]
+                    if neighbor != destination_airport:
+                        layover_count += 1
+                    path_with_layovers[neighbor] = (current_airport, layover_count)
 
         # If destination airport is not reachable
         return None, -1  # or any appropriate indicator
@@ -320,4 +324,4 @@ def haversine_formula_distance(lat1, lon1, lat2, lon2):
 
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(graph.least_layovers_bfs("LHR", "AMS"))
+print(graph.least_layovers_bfs("LHR", "CRA"))
