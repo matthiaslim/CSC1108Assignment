@@ -13,16 +13,19 @@ class AirportNode:
         self.longitude = longitude  # Longitude of the airport's location
         self.routes = []  # list to store all available routes
 
-    def add_route_edge(self, destination_airport, distance):
-        route_edge = RouteEdge(self.iata_code, destination_airport, distance)
+    def add_route_edge(self, destination_airport, weights):
+        route_edge = RouteEdge(self.iata_code, destination_airport, weights)
         self.routes.append(route_edge)
 
 
 class RouteEdge:
-    def __init__(self, source_airport, destination_airport, distance):
+    def __init__(self, source_airport, destination_airport, weights):
         self.source_airport = source_airport
         self.destination_airport = destination_airport
-        self.distance = distance
+        self.weights = weights  # Dictionary to store weights
+
+    def get_weight(self, weight_name):
+        return self.weights.get(weight_name)
 
 
 class FlightGraph:
@@ -50,15 +53,17 @@ class FlightGraph:
         flights_df = pd.read_csv(flights_file)
 
         for index, row in flights_df.iterrows():
-            self.add_flight_route(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'])
+            self.add_flight_route(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'],
+                                  row['Estimated Cost'])
 
     def add_airport(self, code, airport):
         self.airports[code] = airport
 
-    def add_flight_route(self, source_airport, destination_airport, distance):
+    def add_flight_route(self, source_airport, destination_airport, distance, cost):
         if source_airport in self.airports and destination_airport in self.airports:
             source_node = self.airports[source_airport]
-            source_node.add_route_edge(destination_airport, distance)
+            weights = {'distance': distance, 'cost': cost}
+            source_node.add_route_edge(destination_airport, weights)
 
     def get_routes(self, airport):
         return self.airports[airport].routes
@@ -81,7 +86,7 @@ class FlightGraph:
         # Iterate over routes to find a matching destination airport
         for route in source_routes:
             if route.destination_airport == destination_airport:
-                return route.distance
+                return route.get_weight('distance')
 
         # If no matching route is found, return None
         return None
@@ -96,6 +101,22 @@ class FlightGraph:
                                               self.airports[source_airport].longitude,
                                               self.airports[destination_airport].latitude,
                                               self.airports[destination_airport].longitude)
+
+    def get_flight_cost(self, source_airport, destination_airport):
+        # Check if source and destination airports are valid
+        if source_airport not in self.airports or destination_airport not in self.airports:
+            return None
+
+        # Get routes for the source airport
+        source_routes = self.airports[source_airport].routes
+
+        # Iterate over routes to find a matching destination airport
+        for route in source_routes:
+            if route.destination_airport == destination_airport:
+                return route.get_weight('cost')
+
+        # If no matching route is found, return None
+        return None
 
     def group_airports_by_country(self):
         data = []
@@ -143,9 +164,9 @@ class FlightGraph:
                     previous_airport[neighbour] = current_airport
                     f_heap.insert_node((distance_to_neighbour, neighbour))
 
-        # Check if there are direct flights from the source to the destination airport
+        # Check if there are flights (direct/with stop) from the source to the destination airport
         if distances[destination_airport] == float('inf'):
-            print(f"No direct flights from {source_airport} to {destination_airport}.")
+            print(f"No flights from {source_airport} to {destination_airport}.")
             # Find the nearest airport to the destination recursively
             nearest_airport = self.find_nearest_airport(destination_airport)
             print(f"Rerouting to nearest airport {nearest_airport}.")
@@ -239,9 +260,12 @@ class FlightGraph:
         # Initialise priority queue with fibonacci heap
         f_heap = FibonacciHeap()
         f_heap.insert_node((0, source_airport))
-        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
-        g_score = {iata: float('inf') for iata in
-                   self.airports}  # Dict to store the actual cost from source to each node
+
+        # Initialize a dictionary to store the previous airport for each airport
+        previous_airport = {}
+
+        # Dict to store the actual cost from source to each node
+        g_score = {iata: float('inf') for iata in self.airports}
         g_score[source_airport] = 0
 
         while f_heap.count > 0:
@@ -250,6 +274,36 @@ class FlightGraph:
             # If the destination airport is reached, stop
             if current_airport == destination_airport:
                 break
+
+            # Visit each neighboring airport of the current airport
+            for neighbour in self.get_neighbors(current_airport):
+                tentative_g_score = current_cost + self.calculate_distance(current_airport, neighbour)
+                # Update the distance to the neighbor if it's smaller than the recorded distance
+                if tentative_g_score < g_score[neighbour]:
+                    g_score[neighbour] = tentative_g_score
+                    # Calculate the estimated total cost from the source to the destination through the neighbor
+                    # (using the heuristic, which is the estimated flight cost in this case)
+                    h_score = self.get_flight_cost(current_airport, neighbour)
+                    f_score = tentative_g_score + h_score
+                    #  Update the path taken
+                    previous_airport[neighbour] = current_airport
+                    f_heap.insert_node((f_score, neighbour))
+
+        # Reconstruct the shortest path from the previous_airport dictionary
+        shortest_path = []
+        flight_cost = 0  # Variable to store total flight cost
+        current_airport = destination_airport
+        while current_airport != source_airport:
+            shortest_path.append(current_airport)
+            flight_cost += self.get_flight_cost(previous_airport[current_airport], current_airport)
+            current_airport = previous_airport[current_airport]
+        shortest_path.append(source_airport)
+        if len(shortest_path) < 2:
+            # If the list only contains source airport, return None
+            return None
+        else:
+            # Else, return the shortest path to the destination airport
+            return shortest_path[::-1], flight_cost
 
 
 # Creating fibonacci tree
@@ -368,5 +422,6 @@ def calculate_flight_cost(distance):
 
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-# print(graph.least_layovers_bfs("LHR", "CRA"))
-# print(graph.find_shortest_path("LHR", "CRA"))
+# print(graph.least_layovers_bfs("LHR", "AYT"))
+# print(graph.find_shortest_path("LHR", "AYT"))
+print(graph.cheapest_flight_astar("LHR", "AYT"))
