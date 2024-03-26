@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, \
-    QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox, QMessageBox
+    QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox, QMessageBox, QCheckBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import flight_tracker
@@ -19,6 +19,12 @@ class MapWindow(QMainWindow):
         self.setGeometry(100, 100, 1920, 1080)
 
         self.country_data = self.AirportGraph.group_airports_by_country()
+
+        # self.checkboxes = {
+        #     "BFS Path": QCheckBox("BFS Path"),
+        #     "Dijkstra Path": QCheckBox("Dijkstra Path"),
+        #     "Third Path": QCheckBox("Third Path")
+        # }
 
         # Data for testing purposes
         # self.country_data = {'Albania': ['Tirana International Airport Mother Teresa (TIA)',
@@ -102,6 +108,21 @@ class MapWindow(QMainWindow):
         destination_container.addLayout(destination_country_layout)
         destination_container.addLayout(destination_airport_layout)
 
+        # Create Checkbox for choosing airports
+        self.bfs_checkbox = QCheckBox("Least Layovers")
+        self.dijkstra_checkbox = QCheckBox("Fastest Path")
+        self.cost_checkbox = QCheckBox("Cheapest Path")
+        # self.bfs_checkbox.stateChanged.connect(self.update_displayed_paths)
+        # self.dijkstra_checkbox.stateChanged.connect(self.update_displayed_paths)
+
+        # Create layout for checkboxes
+        checkbox_layout = QVBoxLayout()
+        checkbox_layout.addWidget(self.bfs_checkbox)
+        checkbox_layout.addWidget(self.dijkstra_checkbox)
+        checkbox_layout.addWidget(self.cost_checkbox)
+        checkbox_layout.setAlignment(Qt.AlignHCenter)
+        checkbox_layout.setContentsMargins(0, 20, 0, 20)
+
         # Create button to search airports
         self.search_button = QPushButton("Search")
         self.search_button.setFixedSize(120, 40)
@@ -114,6 +135,7 @@ class MapWindow(QMainWindow):
         input_layout = QVBoxLayout()
         input_layout.addLayout(source_container)
         input_layout.addLayout(destination_container)
+        input_layout.addLayout(checkbox_layout)
         input_layout.addLayout(search_button_layout)
         input_layout.setContentsMargins(0, 120, 0, 0)
         input_layout.addStretch()
@@ -176,31 +198,76 @@ class MapWindow(QMainWindow):
 
         source_airport = self.source_airport_dropdown.currentText()
         destination_airport = self.destination_airport_dropdown.currentText()
-        source_iata = re.search(r'\(([^)]+)', source_airport).group(1) if '(' in source_airport else ''
-        destination_iata = re.search(r'\(([^)]+)', destination_airport).group(1) if '(' in destination_airport else ''
+
+        pattern = r'\(([A-Z]{3})\)'
+        source_iata, destination_iata = None, None
+        source_iata_match = re.search(pattern, source_airport)
+        if source_iata_match:
+            source_iata = source_iata_match.group(1)
+        destination_iata_match = re.search(pattern, destination_airport)
+        if destination_iata_match:
+            destination_iata = destination_iata_match.group(1)
         source_destination_iata = [source_iata, destination_iata]
+        print(source_destination_iata)
         return source_destination_iata
 
     def show_airport_on_map(self):
         source_iata, destination_iata = self.search_flights()
         airport_graph = self.AirportGraph
-        dijkstra_path = airport_graph.find_shortest_path(source_iata, destination_iata)
-        print(dijkstra_path)
+
         airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
         node_airport = airport_graph.airports
-        print(node_airport)
-        edge_coords = []
-        if dijkstra_path is None:
-            QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
-            return
-        for iata in dijkstra_path:
-            airport_path = node_airport.get(iata)
-            if airport_path:
-                text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
-                folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
-                              icon=folium.Icon(color="blue")).add_to(airport_map)
-                edge_coords.append((airport_path.latitude, airport_path.longitude))
-        folium.plugins.AntPath(locations=edge_coords, color="red", weight=2.5, opacity=1).add_to(airport_map)
+
+        # For dijkstra_path
+        if self.dijkstra_checkbox.isChecked():
+            edge_coords = []
+            dijkstra_path = airport_graph.find_shortest_path(source_iata, destination_iata)
+            if dijkstra_path is None:
+                QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
+                return
+            for iata in dijkstra_path:
+                airport_path = node_airport.get(iata)
+                if airport_path:
+                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
+                                  icon=folium.Icon(color="blue")).add_to(airport_map)
+                    edge_coords.append((airport_path.latitude, airport_path.longitude))
+            folium.plugins.AntPath(locations=edge_coords, color="red", weight=2.5, opacity=1).add_to(airport_map)
+            if dijkstra_path[-1] != destination_iata:
+                QMessageBox.information(self, "Rerouting occurred ", f"Rerouting occurred to destination {dijkstra_path[-1]} airport, please take note")
+
+        # For BFS
+        if self.bfs_checkbox.isChecked():
+
+            bfs_path = airport_graph.least_layovers_bfs(source_iata, destination_iata)
+            bfs_coords = []
+            bfs_route, no_of_layovers = bfs_path
+            if bfs_route is None:
+                QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
+                return
+            for iata in bfs_route:
+                airport_path = node_airport.get(iata)
+                if airport_path:
+                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
+                                  icon=folium.Icon(color="green")).add_to(airport_map)
+                    bfs_coords.append((airport_path.latitude, airport_path.longitude))
+                folium.plugins.AntPath(locations=bfs_coords, color="blue", weight=2.5, opacity=1).add_to(airport_map)
+
+        if self.cost_checkbox.isChecked():
+            cost_path = airport_graph.cheapest_flight_astar(source_iata, destination_iata)
+            cost_coords = []
+            cost_route, cost_of_flight = cost_path
+            if cost_route is None:
+                QMessageBox.information(self, "No Path Found", "No path found between selected airports")
+            for iata in cost_route:
+                airport_path = node_airport.get(iata)
+                if airport_path:
+                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
+                                  icon=folium.Icon(color="pink")).add_to(airport_map)
+                    cost_coords.append((airport_path.latitude, airport_path.longitude))
+                folium.plugins.AntPath(locations=cost_coords, color="pink", weight=2.5, opacity=0.5).add_to(airport_map)
 
         airport_map.save('airport_map.html')
         self.web_view.setHtml(open("airport_map.html").read())

@@ -129,6 +129,12 @@ class FlightGraph:
         airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
         return airports_by_country
 
+    def match_iata(self):
+        data = []
+        for iata,airport in self.airports.items():
+            data.append({'Name': airport.name,'IATA': airport.iata_code})
+        return data
+
     # find the shortest path between two airports using Dijkstra's shortest path algorithm
     def find_shortest_path(self, source_airport, destination_airport):
         # Check if flight data from source airport exist in the graph
@@ -288,6 +294,11 @@ class FlightGraph:
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (f_score, neighbour))
 
+        # check if destination reachable
+        if destination_airport not in previous_airport:
+            print(f"No route found from {source_airport} to {destination_airport}.")
+            return None
+
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
         flight_cost = 0  # Variable to store total flight cost
@@ -342,6 +353,8 @@ def calculate_flight_cost(distance):
 
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-# print(graph.least_layovers_bfs("LHR", "AYT"))
-print(graph.find_shortest_path("LHR", "AYT"))
-print(graph.cheapest_flight_astar("LHR", "AYT"))
+print(graph.least_layovers_bfs("DBV", "KDL"))
+print(graph.find_shortest_path("DBV", "KDL"))
+print(graph.cheapest_flight_astar("DBV", "KDL"))
+#print(graph.match_iata())
+#print(graph.group_airports_by_country())
