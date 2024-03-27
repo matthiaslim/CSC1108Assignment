@@ -294,10 +294,16 @@ class FlightGraph:
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (f_score, neighbour))
 
-        # check if destination reachable
-        if destination_airport not in previous_airport:
-            print(f"No route found from {source_airport} to {destination_airport}.")
-            return None
+        # Check if there are flights (direct/with stop) from the source to the destination airport
+        if g_score[destination_airport] == float('inf'):
+            print(f"No flights from {source_airport} to {destination_airport}.")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.cheapest_flight_astar(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
@@ -353,8 +359,6 @@ def calculate_flight_cost(distance):
 
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(graph.least_layovers_bfs("DBV", "KDL"))
+print(graph.least_layovers_bfs("LHR", "AYT"))
 print(graph.find_shortest_path("DBV", "KDL"))
 print(graph.cheapest_flight_astar("DBV", "KDL"))
-#print(graph.match_iata())
-#print(graph.group_airports_by_country())
