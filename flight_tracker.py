@@ -170,7 +170,7 @@ class FlightGraph:
         duration_formatted = f"{hours:02d}:{minutes:02d}"
 
         # Return the result
-        return {"path": route_path[::-1],
+        return {"path": route_path,
                 "stops": stops,
                 "cost": cost,
                 "duration": duration_formatted}
@@ -229,6 +229,9 @@ class FlightGraph:
             current_airport = previous_airport[current_airport]
         shortest_path.append(source_airport)
 
+        # Reverse the path to get it in the correct order
+        shortest_path.reverse()
+
         route = self.get_route_information(shortest_path)
 
         # Return the result
@@ -286,6 +289,9 @@ class FlightGraph:
             shortest_path.append(current_airport)
             current_airport = previous_airport[current_airport]
         shortest_path.append(source_airport)
+
+        # Reverse the path to get it in the correct order
+        shortest_path.reverse()
 
         route = self.get_route_information(shortest_path)
 
@@ -349,6 +355,9 @@ class FlightGraph:
             current_airport = previous_airport[current_airport]
         shortest_path.append(source_airport)
 
+        # Reverse the path to get it in the correct order
+        shortest_path.reverse()
+
         route = self.get_route_information(shortest_path)
 
         # Return the result
@@ -360,8 +369,7 @@ class FlightGraph:
         queue = deque()
         visited = set()
 
-        # Initialize a dictionary to track the path and the number of layovers
-        path_with_layovers = {source_airport: (None, 0)}  # (Previous airport, layover count)
+        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
 
         # Mark the source airport as visited and enqueue it along with the initial layover count of 0
         queue.append(source_airport)
@@ -372,33 +380,46 @@ class FlightGraph:
             # Dequeue a vertex from the queue
             current_airport = queue.popleft()
 
-            # Check if the current airport is the destination
+            # If current airport is the destination, stop
             if current_airport == destination_airport:
-                # Reconstruct the path from the destination to the source
-                path = []
-                layovers = path_with_layovers[current_airport][1]
-                while current_airport:
-                    path.append(current_airport)
-                    current_airport = path_with_layovers[current_airport][0]
-                path.reverse()
-                return path, layovers  # Return the path and the number of layovers
+                break
 
-            # Get all adjacent airports (neighbors) of the current airport
-            adjacent_airports = [route.destination_airport for route in self.airports[current_airport].routes]
+            # Visit each neighboring airport of the current airport
+            for neighbour in self.get_neighbors(current_airport):
+                if neighbour not in visited:
+                    #  Update the path taken
+                    previous_airport[neighbour] = current_airport
+                    visited.add(neighbour)
+                    queue.append(neighbour)
 
-            # Enqueue neighboring airports that have not been visited
-            for neighbor in adjacent_airports:
-                if neighbor not in visited:
-                    visited.add(neighbor)
-                    queue.append(neighbor)
-                    # Increment the layover count only if the neighbor is not the destination airport
-                    layover_count = path_with_layovers[current_airport][1]
-                    if neighbor != destination_airport:
-                        layover_count += 1
-                    path_with_layovers[neighbor] = (current_airport, layover_count)
+        # If the destination airport is not visited, it means it is not reachable
+        if destination_airport not in visited:
+            print(f"No flights from {source_airport} to {destination_airport}.")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.least_layovers_bfs(source_airport, destination_airport)
+
+        # Reconstruct the shortest path from the previous_airport dictionary
+        shortest_path = []
+        current_airport = destination_airport
+        while current_airport != source_airport:
+            shortest_path.append(current_airport)
+            current_airport = previous_airport[current_airport]
+        shortest_path.append(source_airport)
+
+        # Reverse the path to get it in the correct order
+        shortest_path.reverse()
+
+        route = self.get_route_information(shortest_path)
+
+        return route
 
         # If destination airport is not reachable
-        return None
+        # return None
 
     def optimal_flight_astar(self, source_airport, destination_airport):
         # Check if flight data from source airport exist in the graph
@@ -430,8 +451,12 @@ class FlightGraph:
                 if tentative_g_score < g_score[neighbour]:
                     g_score[neighbour] = tentative_g_score
                     # Calculate the estimated total cost from the source to the destination through the neighbor
-                    # (using the heuristic, which is the estimated flight cost in this case)
-                    h_score = self.get_flight_cost(current_airport, neighbour)
+                    # (using the heuristic, which is the estimated flight cost and duration in this case)
+                    cost_score = self.get_flight_cost(current_airport, neighbour)
+                    duration_score = self.get_flight_duration(current_airport, neighbour)
+                    if neighbour != destination_airport:
+                        duration_score += 2
+                    h_score = cost_score + duration_score
                     f_score = tentative_g_score + h_score
                     # Update the path taken
                     previous_airport[neighbour] = current_airport
@@ -450,19 +475,17 @@ class FlightGraph:
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
-        flight_cost = 0  # Variable to store total flight cost
         current_airport = destination_airport
         while current_airport != source_airport:
             shortest_path.append(current_airport)
-            flight_cost += self.get_flight_cost(previous_airport[current_airport], current_airport)
             current_airport = previous_airport[current_airport]
         shortest_path.append(source_airport)
-        if len(shortest_path) < 2:
-            # If the list only contains source airport, return None
-            return None
-        else:
-            # Else, return the shortest path to the destination airport
-            return shortest_path[::-1]
+
+        shortest_path.reverse()
+
+        route = self.get_route_information(shortest_path)
+
+        return route
 
     def find_nearest_airport(self, destination_airport):
         # Find the nearest airport to the destination
@@ -485,6 +508,8 @@ class FlightGraph:
             return self.shortest_distance_dijkstra(source_airport, destination_airport)
         elif criteria == "least cost":
             return self.least_cost_dijkstra(source_airport, destination_airport)
+        elif criteria == "shortest duration":
+            return self.shortest_duration_dijkstra(source_airport, destination_airport)
         elif criteria == "least layovers":
             return self.least_layovers_bfs(source_airport, destination_airport)
         else:
@@ -567,6 +592,5 @@ def calculate_flight_duration(distance):
 
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(graph.shortest_distance_dijkstra("AMS", "GLA"))
-print(graph.least_cost_dijkstra("AMS", "GLA"))
-print(graph.shortest_duration_dijkstra("AMS", "GLA"))
+print(graph.filter_routes("LHR", "BDS",
+                          ["optimal", "shortest distance", "least cost", "shortest duration", "least layovers"]))
