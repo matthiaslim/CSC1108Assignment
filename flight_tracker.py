@@ -55,15 +55,15 @@ class FlightGraph:
 
         for index, row in flights_df.iterrows():
             self.add_flight_route(row['Source Airport IATA'], row['Destination Airport IATA'], row['Distance'],
-                                  row['Estimated Cost'])
+                                  row['Estimated Cost'], row['Estimated Duration'])
 
     def add_airport(self, code, airport):
         self.airports[code] = airport
 
-    def add_flight_route(self, source_airport, destination_airport, distance, cost):
+    def add_flight_route(self, source_airport, destination_airport, distance, cost, duration):
         if source_airport in self.airports and destination_airport in self.airports:
             source_node = self.airports[source_airport]
-            weights = {'distance': distance, 'cost': cost}
+            weights = {'distance': distance, 'cost': cost, 'duration': duration}
             source_node.add_route_edge(destination_airport, weights)
 
     def get_routes(self, airport):
@@ -106,7 +106,7 @@ class FlightGraph:
     def get_flight_cost(self, source_airport, destination_airport):
         # Check if source and destination airports are valid
         if source_airport not in self.airports or destination_airport not in self.airports:
-            return None
+            return float('inf')
 
         # Get routes for the source airport
         source_routes = self.airports[source_airport].routes
@@ -116,8 +116,24 @@ class FlightGraph:
             if route.destination_airport == destination_airport:
                 return route.get_weight('cost')
 
-        # If no matching route is found, return None
-        return None
+        # If no matching route is found, return infinite
+        return float('inf')
+
+    def get_flight_duration(self, source_airport, destination_airport):
+        # Check if source and destination airports are valid
+        if source_airport not in self.airports or destination_airport not in self.airports:
+            return float('inf')
+
+        # Get routes for the source airport
+        source_routes = self.airports[source_airport].routes
+
+        # Iterate over routes to find a matching destination airport
+        for route in source_routes:
+            if route.destination_airport == destination_airport:
+                return route.get_weight('duration')
+
+        # If no matching route is found, return infinite
+        return float('inf')
 
     def group_airports_by_country(self):
         data = []
@@ -129,14 +145,38 @@ class FlightGraph:
         airports_by_country = airports_df.groupby('Country')['Name_IATA'].apply(list).to_dict()
         return airports_by_country
 
-    def match_iata(self):
-        data = []
-        for iata,airport in self.airports.items():
-            data.append({'Name': airport.name,'IATA': airport.iata_code})
-        return data
+    def get_route_information(self, route_path):
+        if not route_path or len(route_path) < 2:
+            return {"error": "Invalid route path. It must contain at least two airports."}
 
-    # find the shortest path between two airports using Dijkstra's shortest path algorithm
-    def find_shortest_path(self, source_airport, destination_airport):
+        # Calculate total stops, cost, and duration
+        stops = len(route_path) - 2
+        cost = 0
+        duration = 0
+        for i in range(len(route_path) - 1):
+            current_airport = route_path[i]
+            next_airport = route_path[i + 1]
+            cost += self.get_flight_cost(current_airport, next_airport)
+            duration += self.get_flight_duration(current_airport, next_airport)
+            # Add 2 hours for layover duration
+            if i < len(route_path) - 2:
+                duration += 2
+
+        # get the hours and minutes taken
+        hours = int(duration)
+        minutes = int((duration - hours) * 60)
+
+        # format duration in HH:MM format
+        duration_formatted = f"{hours:02d}:{minutes:02d}"
+
+        # Return the result
+        return {"path": route_path[::-1],
+                "stops": stops,
+                "cost": cost,
+                "duration": duration_formatted}
+
+    # find the shortest distance path between two airports using Dijkstra's shortest path algorithm
+    def shortest_distance_dijkstra(self, source_airport, destination_airport):
         # Check if flight data from source airport exist in the graph
         if not self.get_routes(source_airport):
             print(f"Flights from '{source_airport}' do not exist.")
@@ -179,37 +219,140 @@ class FlightGraph:
             destination_airport = nearest_airport
 
             # Restart the search from the source airport to the nearest airport
-            return self.find_shortest_path(source_airport, destination_airport)
+            return self.shortest_distance_dijkstra(source_airport, destination_airport)
 
-        # Initialise a list to store shortest path taken to reach destination
+        # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
         current_airport = destination_airport
-        # Reconstruct the shortest path using the previous airport dictionary
         while current_airport != source_airport:
             shortest_path.append(current_airport)
             current_airport = previous_airport[current_airport]
         shortest_path.append(source_airport)
 
-        if len(shortest_path) < 2:
-            # If the list only contains source airport, return None
+        route = self.get_route_information(shortest_path)
+
+        # Return the result
+        return route
+
+    def least_cost_dijkstra(self, source_airport, destination_airport):
+        # Check if flight data from source airport exist in the graph
+        if not self.get_routes(source_airport):
+            print(f"Flights from '{source_airport}' do not exist.")
             return None
-        else:
-            # Else, return the shortest path to the destination airport
-            return shortest_path[::-1]
 
-    def find_nearest_airport(self, destination_airport):
-        # Find the nearest airport to the destination
-        nearest_distance = float('inf')
-        nearest_airport = None
+        # Clear shortest path memory
+        costs = {}
+        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
 
-        for airport in self.airports:
-            if airport != destination_airport:
-                distance = self.calculate_distance(airport, destination_airport)
-                if distance < nearest_distance:
-                    nearest_distance = distance
-                    nearest_airport = airport
+        # Initialize cost to all airports as infinity
+        costs = {airport: float('inf') for airport in self.airports}
+        costs[source_airport] = 0
 
-        return nearest_airport
+        # Initialize priority queue with a simple list
+        priority_queue = [(0, source_airport)]
+
+        while priority_queue:
+            current_cost, current_airport = heapq.heappop(priority_queue)
+
+            # If the destination airport is reached, stop
+            if current_airport == destination_airport:
+                break
+
+            # Visit each neighboring airport of the current airport
+            for neighbour in self.get_neighbors(current_airport):
+                cost_to_neighbour = current_cost + self.get_flight_cost(current_airport, neighbour)
+                # Update the cost to the neighbor if it's smaller than the recorded cost
+                if cost_to_neighbour < costs[neighbour]:
+                    costs[neighbour] = cost_to_neighbour
+                    #  Update the path taken
+                    previous_airport[neighbour] = current_airport
+                    heapq.heappush(priority_queue, (cost_to_neighbour, neighbour))
+
+        # Check if there are flights (direct/with stop) from the source to the destination airport
+        if costs[destination_airport] == float('inf'):
+            print(f"No flights from {source_airport} to {destination_airport}.")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.least_cost_dijkstra(source_airport, destination_airport)
+
+        # Reconstruct the shortest path from the previous_airport dictionary
+        shortest_path = []
+        current_airport = destination_airport
+        while current_airport != source_airport:
+            shortest_path.append(current_airport)
+            current_airport = previous_airport[current_airport]
+        shortest_path.append(source_airport)
+
+        route = self.get_route_information(shortest_path)
+
+        # Return the result
+        return route
+
+    def shortest_duration_dijkstra(self, source_airport, destination_airport):
+        # Check if flight data from source airport exist in the graph
+        if not self.get_routes(source_airport):
+            print(f"Flights from '{source_airport}' do not exist.")
+            return None
+
+        # Clear shortest path memory
+        durations = {}
+        previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
+
+        # Initialize cost to all airports as infinity
+        durations = {airport: float('inf') for airport in self.airports}
+        durations[source_airport] = 0
+
+        # Initialize priority queue with a simple list
+        priority_queue = [(0, source_airport)]
+
+        while priority_queue:
+            current_duration, current_airport = heapq.heappop(priority_queue)
+
+            # If the destination airport is reached, stop
+            if current_airport == destination_airport:
+                break
+
+            # Visit each neighboring airport of the current airport
+            for neighbour in self.get_neighbors(current_airport):
+                time_to_neighbour = current_duration + self.get_flight_duration(current_airport, neighbour)
+
+                if neighbour != destination_airport:
+                    time_to_neighbour += 2  # Add 2 hours for layover time
+
+                # Update the time to the neighbor if it's smaller than the recorded duration
+                if time_to_neighbour < durations[neighbour]:
+                    durations[neighbour] = time_to_neighbour
+                    #  Update the path taken
+                    previous_airport[neighbour] = current_airport
+                    heapq.heappush(priority_queue, (time_to_neighbour, neighbour))
+
+        # Check if there are flights (direct/with stop) from the source to the destination airport
+        if durations[destination_airport] == float('inf'):
+            print(f"No flights from {source_airport} to {destination_airport}.")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.shortest_duration_dijkstra(source_airport, destination_airport)
+
+        # Reconstruct the shortest path from the previous_airport dictionary
+        shortest_path = []
+        current_airport = destination_airport
+        while current_airport != source_airport:
+            shortest_path.append(current_airport)
+            current_airport = previous_airport[current_airport]
+        shortest_path.append(source_airport)
+
+        route = self.get_route_information(shortest_path)
+
+        # Return the result
+        return route
 
     # Function to perform Breadth First Search on the flight graph to return path with the least route edges
     def least_layovers_bfs(self, source_airport, destination_airport):
@@ -255,9 +398,9 @@ class FlightGraph:
                     path_with_layovers[neighbor] = (current_airport, layover_count)
 
         # If destination airport is not reachable
-        return None, -1  # or any appropriate indicator
+        return None
 
-    def cheapest_flight_astar(self, source_airport, destination_airport):
+    def optimal_flight_astar(self, source_airport, destination_airport):
         # Check if flight data from source airport exist in the graph
         if not self.get_routes(source_airport):
             print(f"Flights from '{source_airport}' do not exist.")
@@ -303,7 +446,7 @@ class FlightGraph:
             destination_airport = nearest_airport
 
             # Restart the search from the source airport to the nearest airport
-            return self.cheapest_flight_astar(source_airport, destination_airport)
+            return self.optimal_flight_astar(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
@@ -319,7 +462,41 @@ class FlightGraph:
             return None
         else:
             # Else, return the shortest path to the destination airport
-            return shortest_path[::-1], flight_cost
+            return shortest_path[::-1]
+
+    def find_nearest_airport(self, destination_airport):
+        # Find the nearest airport to the destination
+        nearest_distance = float('inf')
+        nearest_airport = None
+
+        for airport in self.airports:
+            if airport != destination_airport:
+                distance = self.calculate_distance(airport, destination_airport)
+                if distance < nearest_distance:
+                    nearest_distance = distance
+                    nearest_airport = airport
+
+        return nearest_airport
+
+    def find_route(self, source_airport, destination_airport, criteria):
+        if criteria == "optimal":
+            return self.optimal_flight_astar(source_airport, destination_airport)
+        elif criteria == "shortest distance":
+            return self.shortest_distance_dijkstra(source_airport, destination_airport)
+        elif criteria == "least cost":
+            return self.least_cost_dijkstra(source_airport, destination_airport)
+        elif criteria == "least layovers":
+            return self.least_layovers_bfs(source_airport, destination_airport)
+        else:
+            print("Invalid criteria selected.")
+            return None
+
+    def filter_routes(self, source_airport, destination_airport, criteria_list):
+        routes = {}
+        for criteria in criteria_list:
+            route = self.find_route(source_airport, destination_airport, criteria)
+            routes[criteria] = route
+        return routes
 
 
 def haversine_formula_distance(lat1, lon1, lat2, lon2):
@@ -357,8 +534,39 @@ def calculate_flight_cost(distance):
     return ceil(total_cost)  # return the total cost rounded up to the nearest whole number
 
 
+def calculate_flight_duration(distance):
+    """Calculates the estimated flight duration in hours based on distance.
+  
+    This function provides a basic estimate of flight duration by considering:
+        - A base_duration to account for pre-flight and taxiing time.
+        - An average flight speed.
+  
+    **Parameters:**
+  
+        distance (float): The distance of the flight in kilometers.
+  
+    **Returns:**
+  
+        float: The estimated flight duration in hours.
+  
+    **Assumptions:**
+  
+        - This is a simplified calculation and does not account for factors like wind speed, 
+          altitude, or specific aircraft performance.
+        - The base_duration is an estimate and may vary depending on the airport and flight.
+    """
+
+    base_duration = 1  # Hours to account for pre-flight/taxiing (adjust if needed)
+    flight_speed = 800  # Average flight speed (km/h) - adjust for a more accurate estimate
+
+    # Calculate total flight time based on distance and average speed
+    flight_duration = base_duration + (distance / flight_speed)
+
+    return flight_duration
+
+
 # test
 graph = FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-print(graph.least_layovers_bfs("LHR", "AYT"))
-print(graph.find_shortest_path("DBV", "KDL"))
-print(graph.cheapest_flight_astar("DBV", "KDL"))
+print(graph.shortest_distance_dijkstra("AMS", "GLA"))
+print(graph.least_cost_dijkstra("AMS", "GLA"))
+print(graph.shortest_duration_dijkstra("AMS", "GLA"))
