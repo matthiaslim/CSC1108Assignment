@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushB
     QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox, QMessageBox, QCheckBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
-import flight_tracker
+import flight_graph
 import re
 import folium.plugins
 
