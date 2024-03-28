@@ -14,12 +14,11 @@ class MapWindow(QMainWindow):
     def __init__(self):
 
         super().__init__()
-        self.AirportGraph = flight_tracker.FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
-        # print(self.AirportGraph.group_airports_by_country())
-
+        self.AirportGraph = flight_graph.FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
         self.setWindowTitle("Airport Locator")
         self.setGeometry(100, 100, 1920, 1080)
 
+        # Data for countries
         self.country_data = self.AirportGraph.group_airports_by_country()
 
         # Data for dropdowns
@@ -29,7 +28,9 @@ class MapWindow(QMainWindow):
         # Data for maximum flights
         self.nums_of_flight_added = 0
         self.max_no_of_flight = 2
-        self.flight_fields = []  # List to store newly added flight field layouts
+
+        # List to store newly added flight field layouts
+        self.flight_fields = []
 
         # Create input field and button
         self.source_country_input_label = QLabel("Source Country:")
@@ -99,20 +100,24 @@ class MapWindow(QMainWindow):
         destination_container.addLayout(destination_airport_layout)
 
         # Create Checkbox for choosing airports
-        self.bfs_checkbox = QCheckBox("Least Layovers")
-        self.dijkstra_checkbox = QCheckBox("Fastest Path")
-        self.cost_checkbox = QCheckBox("Cheapest Path")
+
         self.optimal_checkbox = QCheckBox("Optimal Path")
+        self.shortest_dist_checkbox = QCheckBox("Shortest Distance")
+        self.cheapest_checkbox = QCheckBox("Cheapest Cost")
+        self.shortest_dur_checkbox = QCheckBox("Shortest Duration")
+        self.least_layover_checkbox = QCheckBox("Least Layover")
 
         # Create layout for checkboxes
         checkbox_layout = QVBoxLayout()
-        checkbox_layout.addWidget(self.optimal_checkbox)
+        checkbox_layout.addWidget(self.optimal_checkbox)  # optimal
         checkbox_layout.addSpacing(10)
-        checkbox_layout.addWidget(self.bfs_checkbox)
+        checkbox_layout.addWidget(self.shortest_dist_checkbox)  # shortest distance
         checkbox_layout.addSpacing(10)
-        checkbox_layout.addWidget(self.dijkstra_checkbox)
+        checkbox_layout.addWidget(self.cheapest_checkbox)  # least cost
         checkbox_layout.addSpacing(10)
-        checkbox_layout.addWidget(self.cost_checkbox)
+        checkbox_layout.addWidget(self.shortest_dur_checkbox)  # shortest duration
+        checkbox_layout.addSpacing(10)
+        checkbox_layout.addWidget(self.least_layover_checkbox)  # least layover
         checkbox_layout.setAlignment(Qt.AlignHCenter)
         checkbox_layout.setContentsMargins(0, 20, 0, 20)
 
@@ -178,13 +183,6 @@ class MapWindow(QMainWindow):
         central_widget.setLayout(main_layout)
         self.setCentralWidget(central_widget)
 
-    # def show_airport_location(self):
-    #     iata_code = self.input_field.text().strip().upper()  # Get the entered IATA code
-    #     # Add marker for the airport location
-    #     # Replace the coordinates with the actual coordinates for the IATA code
-    #     folium.Marker([0, 0], popup=iata_code).add_to(self.map)
-    #     self.map_view = folium.Map().get_root().render()
-    #     self.update_map_view()
     def add_flight_fields(self, input_layout):
         # Create input fields for new flight
         new_source_country_label = QLabel("Source Country:")
@@ -259,24 +257,8 @@ class MapWindow(QMainWindow):
         else:
             QMessageBox.information(self, "Maximum Limit Reached",
                                     "You can only add a maximum of 3 source-destination pairs.")
-        print(self.flight_fields)
 
-    # def handle_add_flights(self, input_layout):
-    #     if self.nums_of_flight_added < self.max_no_of_flight:
-    #         self.add_flight_fields(input_layout)
-    #         self.nums_of_flight_added += 1
-    #     else:
-    #         QMessageBox.information(self, "Maximum Limit Reached",
-    #                                 "You can only add a maximum of 3 source-destination pairs.")
-    #         # self.add_button.clicked.disconnect()  # Disconnect the button signal
-    #         # self.add_button.setEnabled(False)  # Disable the button after maximum limit is reached
     def remove_last_flight(self, input_layout):
-        """
-        Removes the most recently added flight input fields from the layout.
-
-        Args:
-            input_layout (QVBoxLayout): The layout containing the flight input fields.
-        """
         if self.nums_of_flight_added > 0:
             # Get the item representing the last flight field layout
             layout_to_remove = input_layout.itemAt(input_layout.count() - 4)
@@ -324,7 +306,6 @@ class MapWindow(QMainWindow):
 
         source_airport = self.source_airport_dropdown.currentText()
         destination_airport = self.destination_airport_dropdown.currentText()
-
         pattern = r'\(([A-Z]{3})\)'
         source_iata, destination_iata = None, None
         source_iata_match = re.search(pattern, source_airport)
@@ -334,73 +315,58 @@ class MapWindow(QMainWindow):
         if destination_iata_match:
             destination_iata = destination_iata_match.group(1)
         source_destination_iata = [source_iata, destination_iata]
-        print(source_destination_iata)
         return source_destination_iata
+
+    def create_paths(self, chosen_path, node_airport, airport_map, destination_iata, color):
+        edge_coords = []
+        path, stop, cost, duration = chosen_path['path'], chosen_path['stops'], chosen_path['cost'], chosen_path[
+            'duration']
+        if chosen_path is None:
+            QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
+        for iata in path:
+            airport_path = node_airport.get(iata)
+            if airport_path:
+                text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
+                              icon=folium.Icon(color=color)).add_to(airport_map)
+                edge_coords.append((airport_path.latitude, airport_path.longitude))
+                folium.plugins.AntPath(locations=edge_coords, color=color, weight=2.5, opacity=1).add_to(
+                    airport_map)
+                print(f"reaches here {edge_coords}")
+        if path[-1] != destination_iata:
+            QMessageBox.information(self, "Rerouting occurred ",
+                                    f"Rerouting occurred to destination {path[-1]} airport, please take note")
 
     def show_airport_on_map(self):
         source_iata, destination_iata = self.search_flights()
         airport_graph = self.AirportGraph
-
         airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
         node_airport = airport_graph.airports
 
-        # For dijkstra_path
-        if self.dijkstra_checkbox.isChecked():
-            edge_coords = []
-            dijkstra_path = airport_graph.find_shortest_path(source_iata, destination_iata)
-            if dijkstra_path is None:
-                QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
-                return
-            for iata in dijkstra_path:
-                airport_path = node_airport.get(iata)
-                if airport_path:
-                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
-                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
-                                  icon=folium.Icon(color="blue")).add_to(airport_map)
-                    edge_coords.append((airport_path.latitude, airport_path.longitude))
-            folium.plugins.AntPath(locations=edge_coords, color="red", weight=2.5, opacity=1).add_to(airport_map)
-            if dijkstra_path[-1] != destination_iata:
-                QMessageBox.information(self, "Rerouting occurred ",
-                                        f"Rerouting occurred to destination {dijkstra_path[-1]} airport, please take note")
+        # Optimal Path
+        if self.optimal_checkbox.isChecked():
+            optimal_path = airport_graph.find_route(source_iata, destination_iata, "optimal")
+            self.create_paths(optimal_path, node_airport, airport_map, destination_iata, "red")
 
-        # For BFS
-        if self.bfs_checkbox.isChecked():
+        # Shortest Distance Path
+        if self.shortest_dist_checkbox.isChecked():
+            shortest_path = airport_graph.find_route(source_iata, destination_iata, "shortest distance")
+            self.create_paths(shortest_path, node_airport, airport_map, destination_iata, "orange")
 
-            bfs_path = airport_graph.least_layovers_bfs(source_iata, destination_iata)
-            bfs_coords = []
-            bfs_route, no_of_layovers = bfs_path
-            if bfs_route is None:
-                QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
-                return
-            for iata in bfs_route:
-                airport_path = node_airport.get(iata)
-                if airport_path:
-                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
-                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
-                                  icon=folium.Icon(color="green")).add_to(airport_map)
-                    bfs_coords.append((airport_path.latitude, airport_path.longitude))
-                folium.plugins.AntPath(locations=bfs_coords, color="blue", weight=2.5, opacity=1).add_to(airport_map)
+        # Cheapest Path
+        if self.cheapest_checkbox.isChecked():
+            cheapest_path = airport_graph.find_route(source_iata, destination_iata, "least cost")
+            self.create_paths(cheapest_path, node_airport, airport_map, destination_iata, "purple")
+        # Shortest Duration Path
+        if self.shortest_dur_checkbox.isChecked():
+            shortest_dur_path = airport_graph.find_route(source_iata, destination_iata, "shortest duration")
+            self.create_paths(shortest_dur_path, node_airport, airport_map, destination_iata, "green")
 
-        if self.cost_checkbox.isChecked():
-            cost_path = airport_graph.cheapest_flight_astar(source_iata, destination_iata)
-            cost_coords = []
-            cost_route, cost_of_flight = cost_path
-            if cost_route is None:
-                QMessageBox.information(self, "No Path Found", "No path found between selected airports")
-            for iata in cost_route:
-                airport_path = node_airport.get(iata)
-                if airport_path:
-                    text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
-                    folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
-                                  icon=folium.Icon(color="pink")).add_to(airport_map)
-                    cost_coords.append((airport_path.latitude, airport_path.longitude))
-                folium.plugins.AntPath(locations=cost_coords, color="pink", weight=2.5, opacity=0.5).add_to(airport_map)
-            if cost_route[-1] != destination_iata:
-                QMessageBox.information(self, "Rerouting occurred ",
-                                        f"Rerouting occurred to destination {cost_route[-1]} airport, please take note")
+        # Least Layovers Path
+        if self.least_layover_checkbox.isChecked():
+            least_layover_path = airport_graph.find_route(source_iata, destination_iata, "least layovers")
+            self.create_paths(least_layover_path, node_airport, airport_map, destination_iata, "blue")
 
-        # if self.optimal_checkbox.isChecked():
-        #     print("Hi")
         airport_map.save('airport_map.html')
         self.web_view.setHtml(open("airport_map.html").read())
 
