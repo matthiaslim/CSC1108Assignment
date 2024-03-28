@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_0af5dc05843bbd2586393c573d6d343c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-ant-path@1.1.2/dist/leaflet-ant-path.min.js"></script>
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_0af5dc05843bbd2586393c573d6d343c" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_0af5dc05843bbd2586393c573d6d343c = L.map(
+                "map_0af5dc05843bbd2586393c573d6d343c",
+                {
+                    center: [50.170824, 15.087472],
+                    crs: L.CRS.EPSG3857,
+                    zoom: 4,
+                    zoomControl: true,
+                    preferCanvas: false,
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_e211c8c180950731022151f150c33d2a = L.tileLayer(
+                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detectRetina": false, "maxNativeZoom": 20, "maxZoom": 20, "minZoom": 0, "noWrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
+            );
+        
+    
+            tile_layer_e211c8c180950731022151f150c33d2a.addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var marker_3236d4e81296ce629f17dc96acbafc05 = L.marker(
+                [42.5614013671875, 18.268199920654297],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_43fea9fcf15803b626369f35dc5540ba = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_3236d4e81296ce629f17dc96acbafc05.setIcon(icon_43fea9fcf15803b626369f35dc5540ba);
+        
+    
+        var popup_d0b762b2dd1568751469a559b723dcb7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_0848bce4759c1682d8f899532bd7cdb0 = $(`<div id="html_0848bce4759c1682d8f899532bd7cdb0" style="width: 100.0%; height: 100.0%;">Airport Name :Dubrovnik Airport Airport Code :DBV</div>`)[0];
+                popup_d0b762b2dd1568751469a559b723dcb7.setContent(html_0848bce4759c1682d8f899532bd7cdb0);
+            
+        
+
+        marker_3236d4e81296ce629f17dc96acbafc05.bindPopup(popup_d0b762b2dd1568751469a559b723dcb7)
+        ;
+
+        
+    
+    
+            var marker_1afc7597671e49a7d0bc37c063e1de33 = L.marker(
+                [52.1656990051, 20.9671001434],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_1dfa385e8d2c335adb1764bf8b0b29b9 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_1afc7597671e49a7d0bc37c063e1de33.setIcon(icon_1dfa385e8d2c335adb1764bf8b0b29b9);
+        
+    
+        var popup_2923371edef87fbcdd9e85e49a93db5c = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_6c91eef43c5971930afa26e74c198ecc = $(`<div id="html_6c91eef43c5971930afa26e74c198ecc" style="width: 100.0%; height: 100.0%;">Airport Name :Warsaw Chopin Airport Airport Code :WAW</div>`)[0];
+                popup_2923371edef87fbcdd9e85e49a93db5c.setContent(html_6c91eef43c5971930afa26e74c198ecc);
+            
+        
+
+        marker_1afc7597671e49a7d0bc37c063e1de33.bindPopup(popup_2923371edef87fbcdd9e85e49a93db5c)
+        ;
+
+        
+    
+    
+            var marker_3aa65e2b1fc024cb9ad58effe234bf00 = L.marker(
+                [59.41329956049999, 24.8327999115],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_aabf1a95bdee20015a00759d2910f267 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_3aa65e2b1fc024cb9ad58effe234bf00.setIcon(icon_aabf1a95bdee20015a00759d2910f267);
+        
+    
+        var popup_c6137957f5b213e7cf2b23a0233fcc07 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_45f17865ad6bfe8a250945c61028cb09 = $(`<div id="html_45f17865ad6bfe8a250945c61028cb09" style="width: 100.0%; height: 100.0%;">Airport Name :Lennart Meri Tallinn Airport Airport Code :TLL</div>`)[0];
+                popup_c6137957f5b213e7cf2b23a0233fcc07.setContent(html_45f17865ad6bfe8a250945c61028cb09);
+            
+        
+
+        marker_3aa65e2b1fc024cb9ad58effe234bf00.bindPopup(popup_c6137957f5b213e7cf2b23a0233fcc07)
+        ;
+
+        
+    
+    
+            var marker_49236be8ae3b827fb6c6ba7e1969bca2 = L.marker(
+                [58.22990036010742, 22.50950050354004],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_2fe909c787c3b1164a06afb9d04a7567 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "blue", "prefix": "glyphicon"}
+            );
+            marker_49236be8ae3b827fb6c6ba7e1969bca2.setIcon(icon_2fe909c787c3b1164a06afb9d04a7567);
+        
+    
+        var popup_41e2a053a9e4e9946b7c05e048492782 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_32b0329dc5a8accdc74583987961c7ea = $(`<div id="html_32b0329dc5a8accdc74583987961c7ea" style="width: 100.0%; height: 100.0%;">Airport Name :Kuressaare Airport Airport Code :URE</div>`)[0];
+                popup_41e2a053a9e4e9946b7c05e048492782.setContent(html_32b0329dc5a8accdc74583987961c7ea);
+            
+        
+
+        marker_49236be8ae3b827fb6c6ba7e1969bca2.bindPopup(popup_41e2a053a9e4e9946b7c05e048492782)
+        ;
+
+        
+    
+    
+            ant_path_2cee98ac10ce3faa0fa9c362824bbe29 = L.polyline.antPath(
+              [[42.5614013671875, 18.268199920654297], [52.1656990051, 20.9671001434], [59.41329956049999, 24.8327999115], [58.22990036010742, 22.50950050354004]],
+              {"bubblingMouseEvents": true, "color": "red", "dashArray": [10, 20], "dashOffset": null, "delay": 400, "fill": false, "fillColor": "red", "fillOpacity": 0.2, "fillRule": "evenodd", "hardwareAcceleration": false, "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 1, "paused": false, "pulseColor": "#FFFFFF", "reverse": false, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+        ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var marker_b3935754b89deeb72fe1026952bd5b33 = L.marker(
+                [42.5614013671875, 18.268199920654297],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_bbc6f91311eb78fec5965f44bee55066 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "pink", "prefix": "glyphicon"}
+            );
+            marker_b3935754b89deeb72fe1026952bd5b33.setIcon(icon_bbc6f91311eb78fec5965f44bee55066);
+        
+    
+        var popup_31653947dff3c1bd99792115b001a29a = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_2f3d7b712cb661f2517f7908575a8393 = $(`<div id="html_2f3d7b712cb661f2517f7908575a8393" style="width: 100.0%; height: 100.0%;">Airport Name :Dubrovnik Airport Airport Code :DBV</div>`)[0];
+                popup_31653947dff3c1bd99792115b001a29a.setContent(html_2f3d7b712cb661f2517f7908575a8393);
+            
+        
+
+        marker_b3935754b89deeb72fe1026952bd5b33.bindPopup(popup_31653947dff3c1bd99792115b001a29a)
+        ;
+
+        
+    
+    
+            ant_path_1846fe3f125232a544a6a8c2e0aa24c0 = L.polyline.antPath(
+              [[42.5614013671875, 18.268199920654297]],
+              {"bubblingMouseEvents": true, "color": "pink", "dashArray": [10, 20], "dashOffset": null, "delay": 400, "fill": false, "fillColor": "pink", "fillOpacity": 0.2, "fillRule": "evenodd", "hardwareAcceleration": false, "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "paused": false, "pulseColor": "#FFFFFF", "reverse": false, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+        ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var marker_1cc1f21cea5c3f709a45984224b83372 = L.marker(
+                [52.1656990051, 20.9671001434],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_f02c5fd55e435e8a6d0fabfed234820f = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "pink", "prefix": "glyphicon"}
+            );
+            marker_1cc1f21cea5c3f709a45984224b83372.setIcon(icon_f02c5fd55e435e8a6d0fabfed234820f);
+        
+    
+        var popup_89be4fa928133b9e66ac074fa124ede7 = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_5fcea5eec01e4f7a92c4b8ebeaf7405d = $(`<div id="html_5fcea5eec01e4f7a92c4b8ebeaf7405d" style="width: 100.0%; height: 100.0%;">Airport Name :Warsaw Chopin Airport Airport Code :WAW</div>`)[0];
+                popup_89be4fa928133b9e66ac074fa124ede7.setContent(html_5fcea5eec01e4f7a92c4b8ebeaf7405d);
+            
+        
+
+        marker_1cc1f21cea5c3f709a45984224b83372.bindPopup(popup_89be4fa928133b9e66ac074fa124ede7)
+        ;
+
+        
+    
+    
+            ant_path_489275417a8621dcf98a8a1749f17380 = L.polyline.antPath(
+              [[42.5614013671875, 18.268199920654297], [52.1656990051, 20.9671001434]],
+              {"bubblingMouseEvents": true, "color": "pink", "dashArray": [10, 20], "dashOffset": null, "delay": 400, "fill": false, "fillColor": "pink", "fillOpacity": 0.2, "fillRule": "evenodd", "hardwareAcceleration": false, "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "paused": false, "pulseColor": "#FFFFFF", "reverse": false, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+        ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var marker_1e58fad616e30c3326eaac160d8286ad = L.marker(
+                [59.41329956049999, 24.8327999115],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_ca700648ddca705f4cfbb2bd03d0e094 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "pink", "prefix": "glyphicon"}
+            );
+            marker_1e58fad616e30c3326eaac160d8286ad.setIcon(icon_ca700648ddca705f4cfbb2bd03d0e094);
+        
+    
+        var popup_1deb7f1dd7704c04456ebf688607f72e = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_fab12bb470e2148c23f6d258a59382e5 = $(`<div id="html_fab12bb470e2148c23f6d258a59382e5" style="width: 100.0%; height: 100.0%;">Airport Name :Lennart Meri Tallinn Airport Airport Code :TLL</div>`)[0];
+                popup_1deb7f1dd7704c04456ebf688607f72e.setContent(html_fab12bb470e2148c23f6d258a59382e5);
+            
+        
+
+        marker_1e58fad616e30c3326eaac160d8286ad.bindPopup(popup_1deb7f1dd7704c04456ebf688607f72e)
+        ;
+
+        
+    
+    
+            ant_path_083e25bb29fcc8daaa7f3a076ac7cad7 = L.polyline.antPath(
+              [[42.5614013671875, 18.268199920654297], [52.1656990051, 20.9671001434], [59.41329956049999, 24.8327999115]],
+              {"bubblingMouseEvents": true, "color": "pink", "dashArray": [10, 20], "dashOffset": null, "delay": 400, "fill": false, "fillColor": "pink", "fillOpacity": 0.2, "fillRule": "evenodd", "hardwareAcceleration": false, "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "paused": false, "pulseColor": "#FFFFFF", "reverse": false, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+        ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var marker_fedb570b8139b71571d8b0f6cf2e6022 = L.marker(
+                [58.22990036010742, 22.50950050354004],
+                {}
+            ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+    
+            var icon_e8d37c796f1d61007b46e51d49718b90 = L.AwesomeMarkers.icon(
+                {"extraClasses": "fa-rotate-0", "icon": "info-sign", "iconColor": "white", "markerColor": "pink", "prefix": "glyphicon"}
+            );
+            marker_fedb570b8139b71571d8b0f6cf2e6022.setIcon(icon_e8d37c796f1d61007b46e51d49718b90);
+        
+    
+        var popup_8fa32e630119142f2d41ae54a1980cbc = L.popup({"maxWidth": "100%"});
+
+        
+            
+                var html_52109e3d51b067247b012c0ce8ae88f9 = $(`<div id="html_52109e3d51b067247b012c0ce8ae88f9" style="width: 100.0%; height: 100.0%;">Airport Name :Kuressaare Airport Airport Code :URE</div>`)[0];
+                popup_8fa32e630119142f2d41ae54a1980cbc.setContent(html_52109e3d51b067247b012c0ce8ae88f9);
+            
+        
+
+        marker_fedb570b8139b71571d8b0f6cf2e6022.bindPopup(popup_8fa32e630119142f2d41ae54a1980cbc)
+        ;
+
+        
+    
+    
+            ant_path_8889e0d20c9fdc392ba92bbbe395a5d9 = L.polyline.antPath(
+              [[42.5614013671875, 18.268199920654297], [52.1656990051, 20.9671001434], [59.41329956049999, 24.8327999115], [58.22990036010742, 22.50950050354004]],
+              {"bubblingMouseEvents": true, "color": "pink", "dashArray": [10, 20], "dashOffset": null, "delay": 400, "fill": false, "fillColor": "pink", "fillOpacity": 0.2, "fillRule": "evenodd", "hardwareAcceleration": false, "lineCap": "round", "lineJoin": "round", "noClip": false, "opacity": 0.5, "paused": false, "pulseColor": "#FFFFFF", "reverse": false, "smoothFactor": 1.0, "stroke": true, "weight": 2.5}
+        ).addTo(map_0af5dc05843bbd2586393c573d6d343c);
+        
+</script>
+</html>

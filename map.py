@@ -10,7 +10,9 @@ import folium.plugins
 
 
 class MapWindow(QMainWindow):
+
     def __init__(self):
+
         super().__init__()
         self.AirportGraph = flight_tracker.FlightGraph("europe_airports.csv", "europe_flight_dataset.csv")
         # print(self.AirportGraph.group_airports_by_country())
@@ -20,26 +22,14 @@ class MapWindow(QMainWindow):
 
         self.country_data = self.AirportGraph.group_airports_by_country()
 
-        # self.checkboxes = {
-        #     "BFS Path": QCheckBox("BFS Path"),
-        #     "Dijkstra Path": QCheckBox("Dijkstra Path"),
-        #     "Third Path": QCheckBox("Third Path")
-        # }
-
-        # Data for testing purposes
-        # self.country_data = {'Albania': ['Tirana International Airport Mother Teresa (TIA)',
-        #                                  'Deft International Airport Mother Teresa (DIA)',
-        #                                  'Allah International Airport Mother Teresa (AIA)'],
-        #                      'Austria': ['Graz Airport (GRZ)', 'Innsbruck Airport (INN)',
-        #                                  'Linz Hörsching Airport (LNZ)', 'Salzburg Airport (SZG)',
-        #                                  'Vienna International Airport (VIE)'],
-        #                      'Belarus': ['Gomel Airport (GME)', 'Vitebsk Vostochny Airport (VTB)',
-        #                                  'Minsk 1 Airport (MHP)', 'Minsk National Airport (MSQ)',
-        #                                  'Hrodna Airport (GNA)', 'Mogilev Airport (MVQ)', 'Brest Airport (BQT)']}
-
         # Data for dropdowns
         self.source_airport_data = []
         self.destination_airport_data = []
+
+        # Data for maximum flights
+        self.nums_of_flight_added = 0
+        self.max_no_of_flight = 2
+        self.flight_fields = []  # List to store newly added flight field layouts
 
         # Create input field and button
         self.source_country_input_label = QLabel("Source Country:")
@@ -89,7 +79,7 @@ class MapWindow(QMainWindow):
         source_container = QVBoxLayout()
         source_container.addLayout(source_country_layout)
         source_container.addLayout(source_airport_layout)
-        source_container.setContentsMargins(0, 0, 0, 40)
+        source_container.setContentsMargins(0, 0, 0, 15)
 
         # Create layout for destination_country
         destination_country_layout = QHBoxLayout()
@@ -112,13 +102,16 @@ class MapWindow(QMainWindow):
         self.bfs_checkbox = QCheckBox("Least Layovers")
         self.dijkstra_checkbox = QCheckBox("Fastest Path")
         self.cost_checkbox = QCheckBox("Cheapest Path")
-        # self.bfs_checkbox.stateChanged.connect(self.update_displayed_paths)
-        # self.dijkstra_checkbox.stateChanged.connect(self.update_displayed_paths)
+        self.optimal_checkbox = QCheckBox("Optimal Path")
 
         # Create layout for checkboxes
         checkbox_layout = QVBoxLayout()
+        checkbox_layout.addWidget(self.optimal_checkbox)
+        checkbox_layout.addSpacing(10)
         checkbox_layout.addWidget(self.bfs_checkbox)
+        checkbox_layout.addSpacing(10)
         checkbox_layout.addWidget(self.dijkstra_checkbox)
+        checkbox_layout.addSpacing(10)
         checkbox_layout.addWidget(self.cost_checkbox)
         checkbox_layout.setAlignment(Qt.AlignHCenter)
         checkbox_layout.setContentsMargins(0, 20, 0, 20)
@@ -127,7 +120,21 @@ class MapWindow(QMainWindow):
         self.search_button = QPushButton("Search")
         self.search_button.setFixedSize(120, 40)
         self.search_button.clicked.connect(self.show_airport_on_map)
-        search_button_layout = QVBoxLayout()
+
+        # Create button to add airports for multicity
+        self.add_button = QPushButton("Add Flight")
+        self.add_button.setFixedSize(120, 40)
+        self.add_button.clicked.connect(lambda: self.add_flight_fields(input_layout))
+
+        self.remove_button = QPushButton("Remove Last Flight")
+        self.remove_button.setFixedSize(120, 40)
+        self.remove_button.clicked.connect(lambda: self.remove_last_flight(input_layout))
+
+        search_button_layout = QHBoxLayout()
+        search_button_layout.addWidget(self.remove_button)
+        search_button_layout.addSpacing(10)
+        search_button_layout.addWidget(self.add_button)
+        search_button_layout.addSpacing(10)
         search_button_layout.addWidget(self.search_button)
         search_button_layout.setAlignment(Qt.AlignHCenter)
 
@@ -178,6 +185,125 @@ class MapWindow(QMainWindow):
     #     folium.Marker([0, 0], popup=iata_code).add_to(self.map)
     #     self.map_view = folium.Map().get_root().render()
     #     self.update_map_view()
+    def add_flight_fields(self, input_layout):
+        # Create input fields for new flight
+        new_source_country_label = QLabel("Source Country:")
+        new_source_airport_label = QLabel("Source Airport:")
+        new_destination_country_label = QLabel("Destination Country:")
+        new_destination_airport_label = QLabel("Destination Airport:")
+
+        new_source_country_dropdown = QComboBox(self)
+        new_source_country_dropdown.setFixedWidth(200)
+        new_source_country_dropdown.addItems(self.country_data.keys())
+        new_source_country_dropdown.setEditable(True)
+        new_source_country_dropdown.setCurrentIndex(-1)
+        new_source_country_dropdown.currentIndexChanged.connect(self.update_source_airport_dropdown)
+
+        new_source_airport_dropdown = QComboBox(self)
+        new_source_airport_dropdown.setFixedWidth(200)
+        new_source_airport_dropdown.setEditable(True)
+
+        new_destination_country_dropdown = QComboBox(self)
+        new_destination_country_dropdown.setFixedWidth(200)
+        new_destination_country_dropdown.addItems(self.country_data.keys())
+        new_destination_country_dropdown.setEditable(True)
+        new_destination_country_dropdown.setCurrentIndex(-1)
+        new_destination_country_dropdown.currentIndexChanged.connect(self.update_destination_airport_dropdown)
+
+        new_destination_airport_dropdown = QComboBox(self)
+        new_destination_airport_dropdown.setFixedWidth(200)
+        new_destination_airport_dropdown.setEditable(True)
+
+        # Create layouts for new flight fields
+        new_source_country_layout = QHBoxLayout()
+        new_source_country_layout.addWidget(new_source_country_label)
+        new_source_country_layout.addWidget(new_source_country_dropdown)
+        new_source_country_layout.setAlignment(Qt.AlignHCenter)
+
+        new_source_airport_layout = QHBoxLayout()
+        new_source_airport_layout.addWidget(new_source_airport_label)
+        new_source_airport_layout.addWidget(new_source_airport_dropdown)
+        new_source_airport_layout.setAlignment(Qt.AlignHCenter)
+
+        new_source_container = QVBoxLayout()
+        new_source_container.addLayout(new_source_country_layout)
+        new_source_container.addLayout(new_source_airport_layout)
+        new_source_container.setContentsMargins(0, 20, 0, 15)
+
+        new_destination_country_layout = QHBoxLayout()
+        new_destination_country_layout.addWidget(new_destination_country_label)
+        new_destination_country_layout.addWidget(new_destination_country_dropdown)
+        new_destination_country_layout.setAlignment(Qt.AlignHCenter)
+
+        new_destination_airport_layout = QHBoxLayout()
+        new_destination_airport_layout.addWidget(new_destination_airport_label)
+        new_destination_airport_layout.addWidget(new_destination_airport_dropdown)
+        new_destination_airport_layout.setAlignment(Qt.AlignHCenter)
+
+        new_destination_container = QVBoxLayout()
+        new_destination_container.addLayout(new_destination_country_layout)
+        new_destination_container.addLayout(new_destination_airport_layout)
+
+        fields_container = QVBoxLayout()
+        fields_container.addLayout(new_source_container)
+        fields_container.addLayout(new_destination_container)
+
+        new_flight_fields = [fields_container]
+
+        if self.nums_of_flight_added < self.max_no_of_flight:
+            # Add all accumulated layouts at the end of input_layout
+            for layout in new_flight_fields:
+                input_layout.insertLayout(input_layout.count() - 3, layout)
+            self.flight_fields.extend(new_flight_fields)  # Append layouts to flight_fields list
+            self.nums_of_flight_added += 1
+        else:
+            QMessageBox.information(self, "Maximum Limit Reached",
+                                    "You can only add a maximum of 3 source-destination pairs.")
+        print(self.flight_fields)
+
+    # def handle_add_flights(self, input_layout):
+    #     if self.nums_of_flight_added < self.max_no_of_flight:
+    #         self.add_flight_fields(input_layout)
+    #         self.nums_of_flight_added += 1
+    #     else:
+    #         QMessageBox.information(self, "Maximum Limit Reached",
+    #                                 "You can only add a maximum of 3 source-destination pairs.")
+    #         # self.add_button.clicked.disconnect()  # Disconnect the button signal
+    #         # self.add_button.setEnabled(False)  # Disable the button after maximum limit is reached
+    def remove_last_flight(self, input_layout):
+        """
+        Removes the most recently added flight input fields from the layout.
+
+        Args:
+            input_layout (QVBoxLayout): The layout containing the flight input fields.
+        """
+        if self.nums_of_flight_added > 0:
+            # Get the item representing the last flight field layout
+            layout_to_remove = input_layout.itemAt(input_layout.count() - 4)
+
+            # Remove the layout from the input_layout
+            input_layout.removeItem(layout_to_remove)
+
+            # Clear widgets within the removed layout efficiently
+            self.clear_layout(layout_to_remove)
+
+            # Update number of flights and remove layout from flight_fields list
+            self.nums_of_flight_added -= 1
+            del self.flight_fields[-1]
+
+        else:
+            QMessageBox.information(self, "No Flights to Remove",
+                                    "There are no flights to remove yet.")
+
+    def clear_layout(self, layout):
+        if layout is not None:
+            while layout.count():
+                item = layout.takeAt(0)
+                widget = item.widget()
+                if widget is not None:
+                    widget.deleteLater()
+                else:
+                    self.clear_layout(item.layout())  # Recursive call for nested layouts
 
     def update_map_view(self):
         self.map_view.reload()
@@ -234,7 +360,8 @@ class MapWindow(QMainWindow):
                     edge_coords.append((airport_path.latitude, airport_path.longitude))
             folium.plugins.AntPath(locations=edge_coords, color="red", weight=2.5, opacity=1).add_to(airport_map)
             if dijkstra_path[-1] != destination_iata:
-                QMessageBox.information(self, "Rerouting occurred ", f"Rerouting occurred to destination {dijkstra_path[-1]} airport, please take note")
+                QMessageBox.information(self, "Rerouting occurred ",
+                                        f"Rerouting occurred to destination {dijkstra_path[-1]} airport, please take note")
 
         # For BFS
         if self.bfs_checkbox.isChecked():
@@ -268,7 +395,12 @@ class MapWindow(QMainWindow):
                                   icon=folium.Icon(color="pink")).add_to(airport_map)
                     cost_coords.append((airport_path.latitude, airport_path.longitude))
                 folium.plugins.AntPath(locations=cost_coords, color="pink", weight=2.5, opacity=0.5).add_to(airport_map)
+            if cost_route[-1] != destination_iata:
+                QMessageBox.information(self, "Rerouting occurred ",
+                                        f"Rerouting occurred to destination {cost_route[-1]} airport, please take note")
 
+        # if self.optimal_checkbox.isChecked():
+        #     print("Hi")
         airport_map.save('airport_map.html')
         self.web_view.setHtml(open("airport_map.html").read())
 
