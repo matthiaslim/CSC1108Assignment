@@ -75,20 +75,37 @@ class Dijkstra:
 
     def find_shortest_distance_multi(self, source_airport, destination_airport, intermediate_airports):
         # Initialize variables
-        multi_flight_routes = []
+        multi_flight_segments = []
         current_source = source_airport
+        flight_path = [current_source]
+        total_layover_time = 0
 
         # Find the shortest distance for each segment of the multi-flight route
         for intermediate in intermediate_airports + [destination_airport]:
+            flight_path.append(intermediate)
             intermediate_flight_route = self.find_shortest_distance(current_source, intermediate)
             if intermediate_flight_route is None:
                 # No valid route found for this segment, return None
                 return None
             else:
-                multi_flight_routes.append(intermediate_flight_route)
+                multi_flight_segments.extend(intermediate_flight_route["segments"])
+                total_layover_time += intermediate_flight_route["total_layover_time"]
                 current_source = intermediate
 
-        return multi_flight_routes
+        # Process multi-flight route information
+        total_stops = len(multi_flight_segments)
+        total_cost = sum(segment["cost"] for segment in multi_flight_segments)
+        total_duration = sum(segment["duration"] for segment in multi_flight_segments)
+
+        # Return aggregated information for the multi-flight route
+        return {
+            "path": flight_path,
+            "segments": multi_flight_segments,
+            "total_stops": total_stops,
+            "total_cost": total_cost,
+            "total_duration": total_duration,
+            "total_layover_time": total_layover_time
+        }
 
     def find_least_cost(self, source_airport, destination_airport):
         # Check if flight data from source airport exist in the graph

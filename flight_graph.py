@@ -147,27 +147,43 @@ class FlightGraph:
         if not route_path or len(route_path) < 2:
             return {"error": "Invalid route path. It must contain at least two airports."}
 
-        # Calculate total stops, distance, cost, and duration
-        stops = len(route_path) - 2
-        cost = 0
-        duration = 0
-        distance = 0
+        segments = []
+        total_stops = len(route_path) - 2
+        total_cost = 0
+        total_duration = 0
+        total_layover_time = 0
+
         for i in range(len(route_path) - 1):
             current_airport = route_path[i]
             next_airport = route_path[i + 1]
-            distance += self.calculate_distance(current_airport, next_airport)
-            cost += self.get_flight_cost(current_airport, next_airport)
-            duration += self.get_flight_duration(current_airport, next_airport)
-            # Add 2 hours for layover duration
-            if i < len(route_path) - 2:
-                duration += 2
+            segment_cost = self.get_flight_cost(current_airport, next_airport)
+            segment_duration = self.get_flight_duration(current_airport, next_airport)
+            layover_time = 0
 
-        # Return the result
-        return {"path": route_path,
-                "distance": distance,
-                "stops": stops,
-                "cost": cost,
-                "duration": duration}
+            if i < len(route_path) - 2:
+                layover_time = 2
+                total_layover_time += layover_time
+
+            segment = {
+                "from": current_airport,
+                "to": next_airport,
+                "cost": segment_cost,
+                "duration": segment_duration,
+                "layover": layover_time
+            }
+
+            segments.append(segment)
+            total_cost += segment_cost
+            total_duration += segment_duration + layover_time
+
+        return {
+            "path": route_path,
+            "segments": segments,
+            "total_stops": total_stops,
+            "total_cost": total_cost,
+            "total_duration": total_duration,
+            "total_layover_time": total_layover_time
+        }
 
     def find_nearest_airport(self, destination_airport):
         # Find the nearest airport to the destination
