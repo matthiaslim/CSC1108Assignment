@@ -133,31 +133,27 @@ class FlightGraph:
         if not route_path or len(route_path) < 2:
             return {"error": "Invalid route path. It must contain at least two airports."}
 
-        # Calculate total stops, cost, and duration
+        # Calculate total stops, distance, cost, and duration
         stops = len(route_path) - 2
         cost = 0
         duration = 0
+        distance = 0
         for i in range(len(route_path) - 1):
             current_airport = route_path[i]
             next_airport = route_path[i + 1]
+            distance += self.calculate_distance(current_airport, next_airport)
             cost += self.get_flight_cost(current_airport, next_airport)
             duration += self.get_flight_duration(current_airport, next_airport)
             # Add 2 hours for layover duration
             if i < len(route_path) - 2:
                 duration += 2
 
-        # get the hours and minutes taken
-        hours = int(duration)
-        minutes = int((duration - hours) * 60)
-
-        # format duration in HH:MM format
-        duration_formatted = f"{hours:02d}:{minutes:02d}"
-
         # Return the result
         return {"path": route_path,
+                "distance": distance,
                 "stops": stops,
                 "cost": cost,
-                "duration": duration_formatted}
+                "duration": duration}
 
     def find_nearest_airport(self, destination_airport):
         # Find the nearest airport to the destination
@@ -173,7 +169,7 @@ class FlightGraph:
 
         return nearest_airport
 
-    def find_route(self, source_airport, destination_airport, criteria):
+    def find_route(self, source_airport, destination_airport, criteria, intermediate_airports=None):
         try:
             if source_airport not in self.airports:
                 raise ValueError(f"Invalid source airport: '{source_airport}'")
@@ -182,16 +178,35 @@ class FlightGraph:
             if criteria not in ["optimal", "shortest distance", "least cost", "shortest duration", "least layovers"]:
                 raise ValueError("Invalid criteria selected.")
 
-            if criteria == "optimal":
-                return self.astar.find_optimal_flight(source_airport, destination_airport)
-            elif criteria == "shortest distance":
-                return self.dijkstra.find_shortest_distance(source_airport, destination_airport)
-            elif criteria == "least cost":
-                return self.dijkstra.find_least_cost(source_airport, destination_airport)
-            elif criteria == "shortest duration":
-                return self.dijkstra.find_shortest_duration(source_airport, destination_airport)
-            elif criteria == "least layovers":
-                return self.bfs.find_least_layovers(source_airport, destination_airport)
+            if intermediate_airports is None:
+                intermediate_airports = []
+
+            # Check if multi-city flight is required based on the given criteria
+            if criteria in ["optimal", "shortest distance", "least cost", "shortest duration", "least layovers"] \
+                    and intermediate_airports:
+                # Handle multi-city flights
+                if criteria == "shortest distance":
+                    return self.dijkstra.find_shortest_distance_multi(source_airport,
+                                                                      destination_airport, intermediate_airports)
+                # Add handling for other criteria if needed
+                # elif criteria == "least cost":
+                #     return self.dijkstra.find_least_cost_multi(source_airport, intermediate_airports + [destination_airport])
+                # elif criteria == "shortest duration":
+                #     return self.dijkstra.find_shortest_duration_multi(source_airport, intermediate_airports + [destination_airport])
+                # elif criteria == "least layovers":
+                #     return self.bfs.find_least_layovers_multi(source_airport, intermediate_airports + [destination_airport])
+            else:
+                # Handle single-city flights
+                if criteria == "optimal":
+                    return self.astar.find_optimal_flight(source_airport, destination_airport)
+                elif criteria == "shortest distance":
+                    return self.dijkstra.find_shortest_distance(source_airport, destination_airport)
+                elif criteria == "least cost":
+                    return self.dijkstra.find_least_cost(source_airport, destination_airport)
+                elif criteria == "shortest duration":
+                    return self.dijkstra.find_shortest_duration(source_airport, destination_airport)
+                elif criteria == "least layovers":
+                    return self.bfs.find_least_layovers(source_airport, destination_airport)
         except ValueError as e:
             print("Input Validation error:", e)
             return None
@@ -199,4 +214,5 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
-#print(graph.find_route("LHR", "AMS", "shortest distance"))
+print(graph.find_route("LHR", "SUF", "shortest distance"))
+print(graph.find_route("LHR", "SUF", "shortest distance", ['AMS', 'ZRH']))

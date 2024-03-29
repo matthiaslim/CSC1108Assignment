@@ -65,3 +65,14 @@ def calculate_flight_duration(distance):
     flight_duration = base_duration + (distance / flight_speed)
 
     return flight_duration
+
+
+def format_duration(duration):
+    # get the hours and minutes taken
+    hours = int(duration)
+    minutes = int((duration - hours) * 60)
+
+    # format duration in HH:MM format
+    duration_formatted = f"{hours:02d}:{minutes:02d}"
+
+    return duration_formatted
