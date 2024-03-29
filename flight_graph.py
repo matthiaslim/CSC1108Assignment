@@ -218,10 +218,12 @@ class FlightGraph:
                 if criteria == "shortest distance":
                     return self.dijkstra.find_shortest_distance_multi(source_airport,
                                                                       destination_airport, intermediate_airports)
-                # elif criteria == "least cost":
-                #     return self.dijkstra.find_least_cost_multi(source_airport, destination_airport, intermediate_airports)
-                # elif criteria == "shortest duration":
-                #     return self.dijkstra.find_shortest_duration_multi(source_airport, destination_airport, intermediate_airports)
+                elif criteria == "least cost":
+                    return self.dijkstra.find_least_cost_multi(source_airport, destination_airport,
+                                                               intermediate_airports)
+                elif criteria == "shortest duration":
+                    return self.dijkstra.find_shortest_duration_multi(source_airport, destination_airport,
+                                                                      intermediate_airports)
                 # elif criteria == "least layovers":
                 #     return self.bfs.find_least_layovers_multi(source_airport, destination_airport, intermediate_airports)
             else:
@@ -243,5 +245,7 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
-print(graph.find_route("LHR", "SUF", "shortest distance"))
-print(graph.find_route("LHR", "SUF", "shortest distance", ['AMS', 'ZRH']))
+print(graph.find_route("LHR", "CRV", "shortest distance", ['AMS']))
+print(graph.find_route("LHR", "CRV", "least cost", ['AMS']))
+print(graph.find_route("LHR", "CRV", "shortest duration", ['AMS']))
+
