@@ -53,6 +53,14 @@ class FlightGraph:
     def get_routes(self, airport):
         return self.airports[airport].routes
 
+    def get_routes_to(self, destination_airport):
+        routes_to_airport = []
+        for airport in self.airports:
+            for airport_route in self.airports[airport].routes:
+                if airport_route.destination_airport == destination_airport:
+                    routes_to_airport.append(airport_route)
+        return routes_to_airport
+
     def get_neighbors(self, airport):
         # Get neighboring airports for a given airport
         if airport in self.airports:
@@ -188,13 +196,12 @@ class FlightGraph:
                 if criteria == "shortest distance":
                     return self.dijkstra.find_shortest_distance_multi(source_airport,
                                                                       destination_airport, intermediate_airports)
-                # Add handling for other criteria if needed
                 # elif criteria == "least cost":
-                #     return self.dijkstra.find_least_cost_multi(source_airport, intermediate_airports + [destination_airport])
+                #     return self.dijkstra.find_least_cost_multi(source_airport, destination_airport, intermediate_airports)
                 # elif criteria == "shortest duration":
-                #     return self.dijkstra.find_shortest_duration_multi(source_airport, intermediate_airports + [destination_airport])
+                #     return self.dijkstra.find_shortest_duration_multi(source_airport, destination_airport, intermediate_airports)
                 # elif criteria == "least layovers":
-                #     return self.bfs.find_least_layovers_multi(source_airport, intermediate_airports + [destination_airport])
+                #     return self.bfs.find_least_layovers_multi(source_airport, destination_airport, intermediate_airports)
             else:
                 # Handle single-city flights
                 if criteria == "optimal":
@@ -214,5 +221,5 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
-print(graph.find_route("LHR", "SUF", "shortest distance"))
+print(graph.find_route("BOJ", "UHE", "shortest distance"))
 print(graph.find_route("LHR", "SUF", "shortest distance", ['AMS', 'ZRH']))

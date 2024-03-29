@@ -13,6 +13,22 @@ class Dijkstra:
             print(f"Flights from '{source_airport}' do not exist.")
             return None
 
+        if not self.graph.get_routes_to(destination_airport):
+            print(f"Flights to '{destination_airport}' do not exist")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.graph.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+
+            # Check if the nearest airports has routes to it
+            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
+                print(f"No flights to {nearest_airport}.")
+                return None
+
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.find_shortest_distance(source_airport, destination_airport)
+
         # Clear shortest path memory
         distances = {}
         previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
@@ -40,17 +56,6 @@ class Dijkstra:
                     #  Update the path taken
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (distance_to_neighbour, neighbour))
-
-        # Check if there are flights (direct/with stop) from the source to the destination airport
-        if distances[destination_airport] == float('inf'):
-            print(f"No flights from {source_airport} to {destination_airport}.")
-            # Find the nearest airport to the destination recursively
-            nearest_airport = self.graph.find_nearest_airport(destination_airport)
-            print(f"Rerouting to nearest airport {nearest_airport}.")
-            destination_airport = nearest_airport
-
-            # Restart the search from the source airport to the nearest airport
-            return self.find_shortest_distance(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
@@ -91,6 +96,22 @@ class Dijkstra:
             print(f"Flights from '{source_airport}' do not exist.")
             return None
 
+        if not self.graph.get_routes_to(destination_airport):
+            print(f"Flights to '{destination_airport}' do not exist")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.graph.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+
+            # Check if the nearest airports has routes to it
+            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
+                print(f"No flights to {nearest_airport}.")
+                return None
+
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.find_least_cost(source_airport, destination_airport)
+
         # Clear shortest path memory
         costs = {}
         previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
@@ -119,17 +140,6 @@ class Dijkstra:
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (cost_to_neighbour, neighbour))
 
-        # Check if there are flights (direct/with stop) from the source to the destination airport
-        if costs[destination_airport] == float('inf'):
-            print(f"No flights from {source_airport} to {destination_airport}.")
-            # Find the nearest airport to the destination recursively
-            nearest_airport = self.graph.find_nearest_airport(destination_airport)
-            print(f"Rerouting to nearest airport {nearest_airport}.")
-            destination_airport = nearest_airport
-
-            # Restart the search from the source airport to the nearest airport
-            return self.find_least_cost(source_airport, destination_airport)
-
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
         current_airport = destination_airport
@@ -151,6 +161,22 @@ class Dijkstra:
         if not self.graph.get_routes(source_airport):
             print(f"Flights from '{source_airport}' do not exist.")
             return None
+
+        if not self.graph.get_routes_to(destination_airport):
+            print(f"Flights to '{destination_airport}' do not exist")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.graph.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+
+            # Check if the nearest airports has routes to it
+            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
+                print(f"No flights to {nearest_airport}.")
+                return None
+
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.find_shortest_duration(source_airport, destination_airport)
 
         # Clear shortest path memory
         durations = {}
@@ -183,17 +209,6 @@ class Dijkstra:
                     #  Update the path taken
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (time_to_neighbour, neighbour))
-
-        # Check if there are flights (direct/with stop) from the source to the destination airport
-        if durations[destination_airport] == float('inf'):
-            print(f"No flights from {source_airport} to {destination_airport}.")
-            # Find the nearest airport to the destination recursively
-            nearest_airport = self.graph.find_nearest_airport(destination_airport)
-            print(f"Rerouting to nearest airport {nearest_airport}.")
-            destination_airport = nearest_airport
-
-            # Restart the search from the source airport to the nearest airport
-            return self.find_shortest_duration(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
@@ -252,6 +267,12 @@ class BFS:
             # Find the nearest airport to the destination recursively
             nearest_airport = self.graph.find_nearest_airport(destination_airport)
             print(f"Rerouting to nearest airport {nearest_airport}.")
+
+            # Check if the nearest airport has routes to it
+            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
+                print(f"No flights to {nearest_airport}.")
+                return None
+
             destination_airport = nearest_airport
 
             # Restart the search from the source airport to the nearest airport
@@ -282,6 +303,22 @@ class AStar:
         if not self.graph.get_routes(source_airport):
             print(f"Flights from '{source_airport}' do not exist.")
             return None
+
+        if not self.graph.get_routes_to(destination_airport):
+            print(f"Flights to '{destination_airport}' do not exist")
+            # Find the nearest airport to the destination recursively
+            nearest_airport = self.graph.find_nearest_airport(destination_airport)
+            print(f"Rerouting to nearest airport {nearest_airport}.")
+
+            # Check if the nearest airports has routes to it
+            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
+                print(f"No flights to {nearest_airport}.")
+                return None
+
+            destination_airport = nearest_airport
+
+            # Restart the search from the source airport to the nearest airport
+            return self.find_optimal_flight(source_airport, destination_airport)
 
         # Initialize a dictionary to store the previous airport for each airport
         previous_airport = {}
@@ -317,17 +354,6 @@ class AStar:
                     # Update the path taken
                     previous_airport[neighbour] = current_airport
                     heapq.heappush(priority_queue, (f_score, neighbour))
-
-        # Check if there are flights (direct/with stop) from the source to the destination airport
-        if g_score[destination_airport] == float('inf'):
-            print(f"No flights from {source_airport} to {destination_airport}.")
-            # Find the nearest airport to the destination recursively
-            nearest_airport = self.graph.find_nearest_airport(destination_airport)
-            print(f"Rerouting to nearest airport {nearest_airport}.")
-            destination_airport = nearest_airport
-
-            # Restart the search from the source airport to the nearest airport
-            return self.find_optimal_flight(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []
