@@ -25,6 +25,7 @@ class FlightGraph:
             self.dijkstra = Dijkstra(self)
             self.bfs = BFS(self)
             self.astar = AStar(self)
+            self.routes_to = self.initialize_routes_to()
 
     def load_airports(self, airports_file):
         airports_df = pd.read_csv(airports_file)
@@ -50,16 +51,21 @@ class FlightGraph:
             weights = {'distance': distance, 'cost': cost, 'duration': duration}
             source_node.add_route_edge(destination_airport, weights)
 
-    def get_routes(self, airport):
-        return self.airports[airport].routes
+    def initialize_routes_to(self):
+        routes_to = {}
+        for airport in self.airports.values():
+            for route in airport.routes:
+                destination = route.destination_airport
+                if destination not in routes_to:
+                    routes_to[destination] = []
+                routes_to[destination].append(route)
+        return routes_to
 
     def get_routes_to(self, destination_airport):
-        routes_to_airport = []
-        for airport in self.airports:
-            for airport_route in self.airports[airport].routes:
-                if airport_route.destination_airport == destination_airport:
-                    routes_to_airport.append(airport_route)
-        return routes_to_airport
+        return self.routes_to.get(destination_airport, [])
+
+    def get_routes(self, airport):
+        return self.airports[airport].routes
 
     def get_neighbors(self, airport):
         # Get neighboring airports for a given airport
@@ -221,5 +227,5 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
-print(graph.find_route("BOJ", "UHE", "shortest distance"))
+print(graph.find_route("LHR", "SUF", "shortest distance"))
 print(graph.find_route("LHR", "SUF", "shortest distance", ['AMS', 'ZRH']))
