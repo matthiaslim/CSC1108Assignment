@@ -516,6 +516,7 @@ class MapWindow(QMainWindow):
             location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron"
         )
         node_airport = airport_graph.airports
+        message_information = []
 
         # Optimal Path
         if self.optimal_checkbox.isChecked():
@@ -527,12 +528,8 @@ class MapWindow(QMainWindow):
                     optimal_path, node_airport, airport_map, destination_iata, "red"
                 )
             else:
-                QMessageBox.information(
-                    self,
-                    "No Flight Routes Available",
-                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
-                )
-
+                message_information.append(f"Optimal: No Flight Routes Available from {source_iata} to {destination_iata}")
+    
         # Shortest Distance Path
         if self.shortest_dist_checkbox.isChecked():
             shortest_path = airport_graph.find_route(
@@ -543,11 +540,8 @@ class MapWindow(QMainWindow):
                     shortest_path, node_airport, airport_map, destination_iata, "orange"
                 )
             else:
-                QMessageBox.information(
-                    self,
-                    "No Flight Routes Available",
-                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
-                )
+                message_information.append(f"Shortest: No Flight Routes Available from {source_iata} to {destination_iata}")
+            
 
         # Cheapest Path
         if self.cheapest_checkbox.isChecked():
@@ -559,12 +553,8 @@ class MapWindow(QMainWindow):
                     cheapest_path, node_airport, airport_map, destination_iata, "purple"
                 )
             else:
-                QMessageBox.information(
-                    self,
-                    "No Flight Routes Available",
-                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
-                )
-
+                message_information.append(f"Cheapest: No Flight Routes Available from {source_iata} to {destination_iata}")
+            
         # Shortest Duration Path
         if self.shortest_dur_checkbox.isChecked():
             shortest_dur_path = airport_graph.find_route(
@@ -579,12 +569,8 @@ class MapWindow(QMainWindow):
                     "green",
                 )
             else:
-                QMessageBox.information(
-                    self,
-                    "No Flight Routes Available",
-                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
-                )
-
+                message_information.append(f"Shortest Duration: No Flight Routes Available from {source_iata} to {destination_iata}")
+            
         # Least Layovers Path
         if self.least_layover_checkbox.isChecked():
             least_layover_path = airport_graph.find_route(
@@ -599,11 +585,15 @@ class MapWindow(QMainWindow):
                     "blue",
                 )
             else:
-                QMessageBox.information(
-                    self,
-                    "No Flight Routes Available",
-                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
-                )
+                message_information.append(f"Least Layover: No Flight Routes Available from {source_iata} to {destination_iata}")
+
+        messageString = ""        
+        if message_information is not None:
+            for message in message_information:
+                messageString += message + "\n"
+                
+        if messageString != "":
+            QMessageBox.information(self,"No Flightes Routes Available",messageString)
 
         airport_map.save("airport_map.html")
         self.web_view.setHtml(open("airport_map.html").read())
