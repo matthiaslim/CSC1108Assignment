@@ -23,6 +23,12 @@ import re
 import folium.plugins
 
 
+def format_hours_mins(decimal_hours):
+    hours = int(decimal_hours)
+    minutes = int((decimal_hours - hours) * 60)
+    return f"{hours} hours {minutes} mins"
+
+
 class MapWindow(QMainWindow):
 
     def __init__(self):
@@ -209,9 +215,10 @@ class MapWindow(QMainWindow):
 
     def add_flight_fields(self, input_layout):
         # Create input fields for new flight
+        field_counter = len(self.flight_fields) + 1
 
-        new_destination_country_label = QLabel("Destination Country:")
-        new_destination_airport_label = QLabel("Destination Airport:")
+        new_destination_country_label = QLabel(f"Stop {field_counter} Country:")
+        new_destination_airport_label = QLabel(f"Stop {field_counter} Airport:")
 
         new_destination_country_dropdown = QComboBox(self)
         new_destination_country_dropdown.setFixedWidth(200)
@@ -366,12 +373,13 @@ class MapWindow(QMainWindow):
         return source_destination_iata
 
     def create_paths(
-        self, chosen_path, node_airport, airport_map, destination_iata, color
+            self, chosen_path, node_airport, airport_map, destination_iata, color
     ):
         edge_coords = []
         print(chosen_path)
-        path, stop, cost, duration = (
+        path, segment, stop, cost, duration = (
             chosen_path["path"],
+            chosen_path["segments"],
             chosen_path["total_stops"],
             chosen_path["total_cost"],
             chosen_path["total_duration"],
@@ -380,20 +388,38 @@ class MapWindow(QMainWindow):
             QMessageBox.information(
                 self, "No Path Found", "No path found between selected airports."
             )
-        for iata in path:
+        for i,iata in enumerate(path):
             airport_path = node_airport.get(iata)
             if airport_path:
-                text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
+                text = f"Airport Name: {airport_path.name}({airport_path.iata_code})"
+                popup = folium.Popup(text, max_width=250)
                 folium.Marker(
                     location=[airport_path.latitude, airport_path.longitude],
-                    popup=text,
+                    popup=popup,
                     icon=folium.Icon(color=color),
                 ).add_to(airport_map)
                 edge_coords.append((airport_path.latitude, airport_path.longitude))
-                folium.plugins.AntPath(
-                    locations=edge_coords, color=color, weight=2.5, opacity=1
-                ).add_to(airport_map)
-                print(f"reaches here {edge_coords}")
+                if i<len(path) - 1:
+                    current_airport = node_airport.get(iata)
+                    next_airport = node_airport.get(path[i+1])
+                    midpoint = (next_airport.latitude,
+                                next_airport.longitude)
+                    edge_coords.append(midpoint)
+
+                    segment_info = segment[i]
+                    popup_text = f"Distance: {segment_info['distance']:.2f} km<br>Cost: ${segment_info['cost']}<br>Duration: {format_hours_mins(segment_info['duration'])}"
+                    folium.plugins.AntPath(
+                        locations=edge_coords,
+                        tooltip=popup_text,
+                        color=color,
+                        weight=5.5,
+                        opacity=1
+                    ).add_to(airport_map)
+                    edge_coords = [midpoint]  # Reset edge_coords for the next segment
+        # folium.plugins.AntPath(
+        #     locations=edge_coords, color=color, weight=2.5, opacity=1
+        # ).add_to(airport_map)
+
         if path[-1] != destination_iata:
             QMessageBox.information(
                 self,
@@ -415,7 +441,7 @@ class MapWindow(QMainWindow):
                 source_iata, destination_iata, "optimal", intermediate_iata
             )
             if optimal_path:
-                self.create_pa9ths(
+                self.create_paths(
                     optimal_path, node_airport, airport_map, destination_iata, "red"
                 )
             else:
