@@ -209,6 +209,13 @@ class MapWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def add_flight_fields(self, input_layout):
+        """
+            Adds up to two multi-country fields to enable multi-flights
+
+            Args:
+                input_layout (object): Layout of the entire selection field
+
+        """
         # Create input fields for new flight
         field_counter = len(self.flight_fields) + 1
 
@@ -253,13 +260,15 @@ class MapWindow(QMainWindow):
 
         new_flight_fields = [fields_container]
 
+        # Check if the number of flights added exceed the max number we allowed
         if self.nums_of_flight_added < self.max_no_of_flight:
             # Add all accumulated layouts at the end of input_layout
             for layout in new_flight_fields:
                 input_layout.insertLayout(input_layout.count() - 3, layout)
+            # Append layouts to flight_fields list
             self.flight_fields.extend(
                 new_flight_fields
-            )  # Append layouts to flight_fields list
+            )
             self.nums_of_flight_added += 1
         else:
             QMessageBox.information(
@@ -269,6 +278,13 @@ class MapWindow(QMainWindow):
             )
 
     def remove_last_flight(self, input_layout):
+        """
+            Removes the airport stops fields
+
+            Args:
+                input_layout (object): Layout of the entire selection field
+
+        """
         if self.nums_of_flight_added > 0:
             # Get the item representing the last flight field layout
             layout_to_remove = input_layout.itemAt(input_layout.count() - 4)
@@ -289,6 +305,13 @@ class MapWindow(QMainWindow):
             )
 
     def clear_layout(self, layout):
+        """
+            Helps to clear away all the widgets inside the layout
+
+            Args:
+                layout (object): Layout of the specific field
+
+        """
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
@@ -304,31 +327,49 @@ class MapWindow(QMainWindow):
         self.map_view.reload()
 
     def update_source_airport_dropdown(self):
+        """
+            Update the source airport accordingly to the country selected
+        """
         selected_country = self.source_country_dropdown.currentText()
         self.source_airport_data = self.country_data.get(selected_country, [])
         self.source_airport_dropdown.clear()
         self.source_airport_dropdown.addItems(self.source_airport_data)
 
     def update_destination_airport_dropdown(self):
+        """
+            Update the destination airport accordingly to the country selected
+        """
         selected_country = self.destination_country_dropdown.currentText()
         self.destination_airport_data = self.country_data.get(selected_country, [])
         self.destination_airport_dropdown.clear()
         self.destination_airport_dropdown.addItems(self.destination_airport_data)
 
     def update_new_destination_dropdown(self, dropbox_country, dropbox_airport):
-        # print(f"This is dropbox {dropbox}")
+        """
+            Update the new stops airport accordingly to the country selected
+
+            Args:
+                dropbox_country (QComboBox): dropbox of the country
+                dropbox_airport (QComboBox): dropbox of the airports available in the country
+        """
         selected_country = dropbox_country.currentText()
         self.destination_airport_data = self.country_data.get(selected_country, [])
         dropbox_airport.clear()
         dropbox_airport.addItems(self.destination_airport_data)
 
     def get_new_destination_airport_texts(self):
+
+        """
+            Gets the current text inside the dropbox for stop country and airport fields
+            Returns:
+                list: consist of the all the current text from the drop boxes
+        """
         new_destination_airport_texts = []
         for flight_layout in self.flight_fields:
             # Check if flight_layout has items (not empty)
             if flight_layout.count() > 0:
                 try:
-                    # Attempt to access the dropdown widget (assuming index 1)
+                    # Attempt to access the dropdown widget
                     dropdown_widget = (
                         flight_layout.itemAt(0).itemAt(1).itemAt(1).widget()
                     )
@@ -343,10 +384,17 @@ class MapWindow(QMainWindow):
         return new_destination_airport_texts
 
     def search_flights(self):
+        """
+            Using all the dropdown boxes text and finding all the IATA codes that matches the dropdown box text
+
+            Returns:
+                list: consist of the all the IATA codes from source, destination, intermediaries airports
+        """
+        pattern = r"\(([A-Z]{3})\)"
 
         source_airport = self.source_airport_dropdown.currentText()
         destination_airport = self.destination_airport_dropdown.currentText()
-        pattern = r"\(([A-Z]{3})\)"
+
         source_iata, destination_iata = None, None
         source_iata_match = re.search(pattern, source_airport)
         if source_iata_match:
@@ -355,6 +403,7 @@ class MapWindow(QMainWindow):
         if destination_iata_match:
             destination_iata = destination_iata_match.group(1)
         source_destination_iata = [source_iata, destination_iata]
+
         intermediate_airport = self.get_new_destination_airport_texts()
         intermediary_airport_list = []
         for intermediary in intermediate_airport:
@@ -363,15 +412,24 @@ class MapWindow(QMainWindow):
                 intermediary_airport_list.append(match.group(1))
         if not intermediary_airport_list:
             intermediary_airport_list = None
+
         source_destination_iata.append(intermediary_airport_list)
-        # print(source_destination_iata)
+
         return source_destination_iata
 
-    def create_paths(
-            self, chosen_path, node_airport, airport_map, destination_iata, color
-    ):
+    def create_paths(self, chosen_path, node_airport, airport_map, destination_iata, color):
+        """
+            Create the path line for the path created by the algorithm
+
+            Args:
+                chosen_path (dict): A dictionary consist of the paths, segments, total stops, total duration and total cost of the source to destination
+                node_airport (dict): A dictionary that contains all the airports available
+                airport_map (Map): A map using folium
+                destination_iata (str): The destination IATA code
+                color (str): Color of the path
+        """
         edge_coords = []
-        print(chosen_path)
+
         path, segment, stop, cost, duration = (
             chosen_path["path"],
             chosen_path["segments"],
@@ -383,7 +441,7 @@ class MapWindow(QMainWindow):
             QMessageBox.information(
                 self, "No Path Found", "No path found between selected airports."
             )
-        for i,iata in enumerate(path):
+        for i, iata in enumerate(path):
             airport_path = node_airport.get(iata)
             if airport_path:
                 text = f"Airport Name: {airport_path.name}({airport_path.iata_code})"
@@ -394,9 +452,9 @@ class MapWindow(QMainWindow):
                     icon=folium.Icon(color=color),
                 ).add_to(airport_map)
                 edge_coords.append((airport_path.latitude, airport_path.longitude))
-                if i<len(path) - 1:
+                if i < len(path) - 1:
                     current_airport = node_airport.get(iata)
-                    next_airport = node_airport.get(path[i+1])
+                    next_airport = node_airport.get(path[i + 1])
                     midpoint = (next_airport.latitude,
                                 next_airport.longitude)
                     edge_coords.append(midpoint)
@@ -423,7 +481,20 @@ class MapWindow(QMainWindow):
             )
 
     def show_airport_on_map(self):
+        """
+            Function to check which checkboxes are ticked and show the paths accordingly to what users select.
+            Calls self.create_path() to create the necessary paths on the map
+
+            Returns:
+                list: consist of the all the IATA codes from source, destination, intermediaries airports
+        """
         source_iata, destination_iata, intermediate_iata = self.search_flights()
+        if source_iata == destination_iata or source_iata == intermediate_iata or destination_iata == intermediate_iata:
+            QMessageBox.information(self, "Invalid Route Path", "Please select two different airports")
+            return
+        if len(intermediate_iata) != len(set(intermediate_iata)):
+            QMessageBox.information(self, "Invalid Route Path", "Please select different intermediate paths")
+            return
         airport_graph = self.AirportGraph
         airport_map = folium.Map(
             location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron"
