@@ -149,6 +149,7 @@ class FlightGraph:
 
         segments = []
         total_stops = len(route_path) - 2
+        total_distance = 0
         total_cost = 0
         total_duration = 0
         total_layover_time = 0
@@ -156,6 +157,7 @@ class FlightGraph:
         for i in range(len(route_path) - 1):
             current_airport = route_path[i]
             next_airport = route_path[i + 1]
+            segment_distance = self.get_distance(current_airport, next_airport)
             segment_cost = self.get_flight_cost(current_airport, next_airport)
             segment_duration = self.get_flight_duration(current_airport, next_airport)
             layover_time = 0
@@ -167,12 +169,14 @@ class FlightGraph:
             segment = {
                 "from": current_airport,
                 "to": next_airport,
+                "distance": segment_distance,
                 "cost": segment_cost,
                 "duration": segment_duration,
                 "layover": layover_time
             }
 
             segments.append(segment)
+            total_distance += segment_distance
             total_cost += segment_cost
             total_duration += segment_duration + layover_time
 
@@ -180,6 +184,7 @@ class FlightGraph:
             "path": route_path,
             "segments": segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time

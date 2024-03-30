@@ -23,8 +23,8 @@ class Dijkstra:
 
             Returns:
                 dict or None: A dictionary containing information about the shortest distance route,
-                              including the flight path, segments, total stops, total cost, total duration,
-                              and total layover time. Returns None if no valid route is found.
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
         """
         # Check if flight data from source airport exist in the graph
         if not self.graph.get_routes(source_airport):
@@ -104,8 +104,8 @@ class Dijkstra:
 
             Returns:
                 dict or None: A dictionary containing information about the shortest distance multi-flight route,
-                              including the flight path, segments, total stops, total cost, total duration,
-                              and total layover time. Returns None if no valid route is found.
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
         """
         # Initialize variables
         multi_flight_segments = []
@@ -127,6 +127,7 @@ class Dijkstra:
 
         # Process multi-flight route information
         total_stops = len(multi_flight_segments)
+        total_distance = sum(segment["distance"] for segment in multi_flight_segments)
         total_cost = sum(segment["cost"] for segment in multi_flight_segments)
         total_duration = sum(segment["duration"] for segment in multi_flight_segments)
 
@@ -135,6 +136,7 @@ class Dijkstra:
             "path": flight_path,
             "segments": multi_flight_segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time
@@ -149,9 +151,9 @@ class Dijkstra:
                 destination_airport (str): The IATA code of the destination airport.
 
             Returns:
-                dict or None: A dictionary containing information about the shortest distance route,
-                              including the flight path, segments, total stops, total cost, total duration,
-                              and total layover time. Returns None if no valid route is found.
+                dict or None: A dictionary containing information about the least cost route,
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
         """
         # Check if flight data from source airport exist in the graph
         if not self.graph.get_routes(source_airport):
@@ -230,9 +232,9 @@ class Dijkstra:
                 intermediate_airports (list of str): List of IATA codes of intermediate airports.
 
             Returns:
-                dict or None: A dictionary containing information about the shortest distance multi-flight route,
-                              including the flight path, segments, total stops, total cost, total duration,
-                              and total layover time. Returns None if no valid route is found.
+                dict or None: A dictionary containing information about the least cost multi-flight route,
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
         """
         # Initialize variables
         multi_flight_segments = []
@@ -254,6 +256,7 @@ class Dijkstra:
 
         # Process multi-flight route information
         total_stops = len(multi_flight_segments)
+        total_distance = sum(segment["distance"] for segment in multi_flight_segments)
         total_cost = sum(segment["cost"] for segment in multi_flight_segments)
         total_duration = sum(segment["duration"] for segment in multi_flight_segments)
 
@@ -262,6 +265,7 @@ class Dijkstra:
             "path": flight_path,
             "segments": multi_flight_segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time
@@ -276,9 +280,9 @@ class Dijkstra:
                 destination_airport (str): The IATA code of the destination airport.
 
             Returns:
-                dict or None: A dictionary containing information about the shortest distance route,
-                              including the flight path, segments, total stops, total cost, total duration,
-                              and total layover time. Returns None if no valid route is found.
+                dict or None: A dictionary containing information about the shortest duration route,
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
         """
         # Check if flight data from source airport exist in the graph
         if not self.graph.get_routes(source_airport):
@@ -352,6 +356,19 @@ class Dijkstra:
         return route
 
     def find_shortest_duration_multi(self, source_airport, destination_airport, intermediate_airports):
+        """
+            Find the shortest duration multi-flight route between two airports with intermediate stops.
+
+            Args:
+                source_airport (str): The IATA code of the source airport.
+                destination_airport (str): The IATA code of the destination airport.
+                intermediate_airports (list of str): List of IATA codes of intermediate airports.
+
+            Returns:
+                dict or None: A dictionary containing information about the shortest duration multi-flight route,
+                              including the flight path, segments, total stops, total distance, total cost,
+                              total duration, and total layover time. Returns None if no valid route is found.
+        """
         # Initialize variables
         multi_flight_segments = []
         current_source = source_airport
@@ -372,6 +389,7 @@ class Dijkstra:
 
         # Process multi-flight route information
         total_stops = len(multi_flight_segments)
+        total_distance = sum(segment["distance"] for segment in multi_flight_segments)
         total_cost = sum(segment["cost"] for segment in multi_flight_segments)
         total_duration = sum(segment["duration"] for segment in multi_flight_segments)
 
@@ -380,6 +398,7 @@ class Dijkstra:
             "path": flight_path,
             "segments": multi_flight_segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time
@@ -486,6 +505,7 @@ class BFS:
 
         # Process multi-flight route information
         total_stops = len(multi_flight_segments)
+        total_distance = sum(segment["distance"] for segment in multi_flight_segments)
         total_cost = sum(segment["cost"] for segment in multi_flight_segments)
         total_duration = sum(segment["duration"] for segment in multi_flight_segments)
 
@@ -494,6 +514,7 @@ class BFS:
             "path": flight_path,
             "segments": multi_flight_segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time
@@ -596,6 +617,7 @@ class AStar:
 
         # Process multi-flight route information
         total_stops = len(multi_flight_segments)
+        total_distance = sum(segment["distance"] for segment in multi_flight_segments)
         total_cost = sum(segment["cost"] for segment in multi_flight_segments)
         total_duration = sum(segment["duration"] for segment in multi_flight_segments)
 
@@ -604,6 +626,7 @@ class AStar:
             "path": flight_path,
             "segments": multi_flight_segments,
             "total_stops": total_stops,
+            "total_distance": total_distance,
             "total_cost": total_cost,
             "total_duration": total_duration,
             "total_layover_time": total_layover_time
