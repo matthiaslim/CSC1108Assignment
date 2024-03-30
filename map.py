@@ -1,7 +1,21 @@
 import sys
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, \
-    QWidget, QFrame, QSpacerItem, QSizePolicy, QComboBox, QMessageBox, QCheckBox
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QVBoxLayout,
+    QHBoxLayout,
+    QWidget,
+    QFrame,
+    QSpacerItem,
+    QSizePolicy,
+    QComboBox,
+    QMessageBox,
+    QCheckBox,
+)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import flight_graph
@@ -14,7 +28,9 @@ class MapWindow(QMainWindow):
     def __init__(self):
 
         super().__init__()
-        self.AirportGraph = flight_graph.FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
+        self.AirportGraph = flight_graph.FlightGraph(
+            "data/europe_airports.csv", "data/europe_flight_dataset.csv"
+        )
         self.setWindowTitle("Airport Locator")
         self.setGeometry(100, 100, 1920, 1080)
 
@@ -44,7 +60,9 @@ class MapWindow(QMainWindow):
         self.source_country_dropdown.addItems(self.country_data.keys())
         self.source_country_dropdown.setEditable(True)
         self.source_country_dropdown.setCurrentIndex(-1)
-        self.source_country_dropdown.currentIndexChanged.connect(self.update_source_airport_dropdown)
+        self.source_country_dropdown.currentIndexChanged.connect(
+            self.update_source_airport_dropdown
+        )
 
         # Dropdown for Source States
         self.source_airport_dropdown = QComboBox(self)
@@ -57,7 +75,9 @@ class MapWindow(QMainWindow):
         self.destination_country_dropdown.addItems(self.country_data.keys())
         self.destination_country_dropdown.setEditable(True)
         self.destination_country_dropdown.setCurrentIndex(-1)
-        self.destination_country_dropdown.currentIndexChanged.connect(self.update_destination_airport_dropdown)
+        self.destination_country_dropdown.currentIndexChanged.connect(
+            self.update_destination_airport_dropdown
+        )
 
         # Dropdown for Destination States
         self.destination_airport_dropdown = QComboBox(self)
@@ -133,7 +153,9 @@ class MapWindow(QMainWindow):
 
         self.remove_button = QPushButton("Remove Last Flight")
         self.remove_button.setFixedSize(120, 40)
-        self.remove_button.clicked.connect(lambda: self.remove_last_flight(input_layout))
+        self.remove_button.clicked.connect(
+            lambda: self.remove_last_flight(input_layout)
+        )
 
         search_button_layout = QHBoxLayout()
         search_button_layout.addWidget(self.remove_button)
@@ -158,7 +180,9 @@ class MapWindow(QMainWindow):
         input_frame.setLayout(input_layout)
 
         # Create Folium map
-        self.map = folium.Map(location=(50.170824, 15.087472), zoom_start=4, tiles="cartodb positron")
+        self.map = folium.Map(
+            location=(50.170824, 15.087472), zoom_start=4, tiles="cartodb positron"
+        )
         self.map.save("map.html")
 
         # Create WebEngineView to display the map
@@ -200,7 +224,9 @@ class MapWindow(QMainWindow):
         new_destination_airport_dropdown.setEditable(True)
 
         new_destination_country_dropdown.currentIndexChanged.connect(
-            lambda: self.update_new_destination_dropdown(new_destination_country_dropdown, new_destination_airport_dropdown)
+            lambda: self.update_new_destination_dropdown(
+                new_destination_country_dropdown, new_destination_airport_dropdown
+            )
         )
 
         # Create layouts for new flight fields
@@ -229,11 +255,16 @@ class MapWindow(QMainWindow):
             # Add all accumulated layouts at the end of input_layout
             for layout in new_flight_fields:
                 input_layout.insertLayout(input_layout.count() - 3, layout)
-            self.flight_fields.extend(new_flight_fields)  # Append layouts to flight_fields list
+            self.flight_fields.extend(
+                new_flight_fields
+            )  # Append layouts to flight_fields list
             self.nums_of_flight_added += 1
         else:
-            QMessageBox.information(self, "Maximum Limit Reached",
-                                    "You can only add a maximum of 3 source-destination pairs.")
+            QMessageBox.information(
+                self,
+                "Maximum Limit Reached",
+                "You can only add a maximum of 3 source-destination pairs.",
+            )
 
     def remove_last_flight(self, input_layout):
         if self.nums_of_flight_added > 0:
@@ -251,8 +282,9 @@ class MapWindow(QMainWindow):
             del self.flight_fields[-1]
 
         else:
-            QMessageBox.information(self, "No Flights to Remove",
-                                    "There are no flights to remove yet.")
+            QMessageBox.information(
+                self, "No Flights to Remove", "There are no flights to remove yet."
+            )
 
     def clear_layout(self, layout):
         if layout is not None:
@@ -262,7 +294,9 @@ class MapWindow(QMainWindow):
                 if widget is not None:
                     widget.deleteLater()
                 else:
-                    self.clear_layout(item.layout())  # Recursive call for nested layouts
+                    self.clear_layout(
+                        item.layout()
+                    )  # Recursive call for nested layouts
 
     def update_map_view(self):
         self.map_view.reload()
@@ -293,7 +327,9 @@ class MapWindow(QMainWindow):
             if flight_layout.count() > 0:
                 try:
                     # Attempt to access the dropdown widget (assuming index 1)
-                    dropdown_widget = flight_layout.itemAt(0).itemAt(1).itemAt(1).widget()
+                    dropdown_widget = (
+                        flight_layout.itemAt(0).itemAt(1).itemAt(1).widget()
+                    )
 
                     new_destination_airport_texts.append(dropdown_widget.currentText())
                 except AttributeError:
@@ -308,7 +344,7 @@ class MapWindow(QMainWindow):
 
         source_airport = self.source_airport_dropdown.currentText()
         destination_airport = self.destination_airport_dropdown.currentText()
-        pattern = r'\(([A-Z]{3})\)'
+        pattern = r"\(([A-Z]{3})\)"
         source_iata, destination_iata = None, None
         source_iata_match = re.search(pattern, source_airport)
         if source_iata_match:
@@ -320,7 +356,7 @@ class MapWindow(QMainWindow):
         intermediate_airport = self.get_new_destination_airport_texts()
         intermediary_airport_list = []
         for intermediary in intermediate_airport:
-            match = re.search(pattern,intermediary)
+            match = re.search(pattern, intermediary)
             if match:
                 intermediary_airport_list.append(match.group(1))
         if not intermediary_airport_list:
@@ -329,70 +365,139 @@ class MapWindow(QMainWindow):
         # print(source_destination_iata)
         return source_destination_iata
 
-    def create_paths(self, chosen_path, node_airport, airport_map, destination_iata, color):
+    def create_paths(
+        self, chosen_path, node_airport, airport_map, destination_iata, color
+    ):
         edge_coords = []
         print(chosen_path)
-        path, stop, cost, duration = chosen_path['path'], chosen_path['total_stops'], chosen_path['total_cost'], chosen_path[
-            'total_duration']
+        path, stop, cost, duration = (
+            chosen_path["path"],
+            chosen_path["total_stops"],
+            chosen_path["total_cost"],
+            chosen_path["total_duration"],
+        )
         if chosen_path is None:
-            QMessageBox.information(self, "No Path Found", "No path found between selected airports.")
+            QMessageBox.information(
+                self, "No Path Found", "No path found between selected airports."
+            )
         for iata in path:
             airport_path = node_airport.get(iata)
             if airport_path:
                 text = f"Airport Name :{airport_path.name} Airport Code :{airport_path.iata_code}"
-                folium.Marker(location=[airport_path.latitude, airport_path.longitude], popup=text,
-                              icon=folium.Icon(color=color)).add_to(airport_map)
+                folium.Marker(
+                    location=[airport_path.latitude, airport_path.longitude],
+                    popup=text,
+                    icon=folium.Icon(color=color),
+                ).add_to(airport_map)
                 edge_coords.append((airport_path.latitude, airport_path.longitude))
-                folium.plugins.AntPath(locations=edge_coords, color=color, weight=2.5, opacity=1).add_to(
-                    airport_map)
+                folium.plugins.AntPath(
+                    locations=edge_coords, color=color, weight=2.5, opacity=1
+                ).add_to(airport_map)
                 print(f"reaches here {edge_coords}")
         if path[-1] != destination_iata:
-            QMessageBox.information(self, "Rerouting occurred ",
-                                    f"Rerouting occurred to destination {path[-1]} airport, please take note")
+            QMessageBox.information(
+                self,
+                "Rerouting occurred ",
+                f"Rerouting occurred to destination {path[-1]} airport, please take note",
+            )
 
     def show_airport_on_map(self):
         source_iata, destination_iata, intermediate_iata = self.search_flights()
         airport_graph = self.AirportGraph
-        airport_map = folium.Map(location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron")
+        airport_map = folium.Map(
+            location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron"
+        )
         node_airport = airport_graph.airports
 
         # Optimal Path
         if self.optimal_checkbox.isChecked():
-            optimal_path = airport_graph.find_route(source_iata, destination_iata, "optimal",intermediate_iata)
+            optimal_path = airport_graph.find_route(
+                source_iata, destination_iata, "optimal", intermediate_iata
+            )
             if optimal_path:
-                self.create_paths(optimal_path, node_airport, airport_map, destination_iata, "red")
+                self.create_pa9ths(
+                    optimal_path, node_airport, airport_map, destination_iata, "red"
+                )
             else:
-                QMessageBox.information(self, "No Flight Routes Available", f"No Flight Routes Available from {source_iata} to {destination_iata}")
-
+                QMessageBox.information(
+                    self,
+                    "No Flight Routes Available",
+                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
+                )
 
         # Shortest Distance Path
         if self.shortest_dist_checkbox.isChecked():
-            shortest_path = airport_graph.find_route(source_iata, destination_iata, "shortest distance",intermediate_iata)
-            if shortest_path is None:
-                QMessageBox.information(self, "No Flight Routes Available", f"No Flight Routes Available from {source_iata} to {destination_iata}")
-            self.create_paths(shortest_path, node_airport, airport_map, destination_iata, "orange")
+            shortest_path = airport_graph.find_route(
+                source_iata, destination_iata, "shortest distance", intermediate_iata
+            )
+            if shortest_path:
+                self.create_paths(
+                    shortest_path, node_airport, airport_map, destination_iata, "orange"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "No Flight Routes Available",
+                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
+                )
 
         # Cheapest Path
         if self.cheapest_checkbox.isChecked():
-            cheapest_path = airport_graph.find_route(source_iata, destination_iata, "least cost",intermediate_iata)
-            if cheapest_path :
-                QMessageBox.information(self, "No Flight Routes Available", f"No Flight Routes Available from {source_iata} to {destination_iata}")
-            self.create_paths(cheapest_path, node_airport, airport_map, destination_iata, "purple")
+            cheapest_path = airport_graph.find_route(
+                source_iata, destination_iata, "least cost", intermediate_iata
+            )
+            if cheapest_path:
+                self.create_paths(
+                    cheapest_path, node_airport, airport_map, destination_iata, "purple"
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "No Flight Routes Available",
+                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
+                )
+
         # Shortest Duration Path
         if self.shortest_dur_checkbox.isChecked():
-            shortest_dur_path = airport_graph.find_route(source_iata, destination_iata, "shortest duration",intermediate_iata)
-            if shortest_dur_path is None:
-                QMessageBox.information(self, "No Flight Routes Available", f"No Flight Routes Available from {source_iata} to {destination_iata}")
-            self.create_paths(shortest_dur_path, node_airport, airport_map, destination_iata, "green")
+            shortest_dur_path = airport_graph.find_route(
+                source_iata, destination_iata, "shortest duration", intermediate_iata
+            )
+            if shortest_dur_path:
+                self.create_paths(
+                    shortest_dur_path,
+                    node_airport,
+                    airport_map,
+                    destination_iata,
+                    "green",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "No Flight Routes Available",
+                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
+                )
 
         # Least Layovers Path
         if self.least_layover_checkbox.isChecked():
-            least_layover_path = airport_graph.find_route(source_iata, destination_iata, "least layovers",intermediate_iata)
-            if least_layover_path is None:
-                QMessageBox.information(self, "No Flight Routes Available", f"No Flight Routes Available from {source_iata} to {destination_iata}")
-            self.create_paths(least_layover_path, node_airport, airport_map, destination_iata, "blue")
+            least_layover_path = airport_graph.find_route(
+                source_iata, destination_iata, "least layovers", intermediate_iata
+            )
+            if least_layover_path:
+                self.create_paths(
+                    least_layover_path,
+                    node_airport,
+                    airport_map,
+                    destination_iata,
+                    "blue",
+                )
+            else:
+                QMessageBox.information(
+                    self,
+                    "No Flight Routes Available",
+                    f"No Flight Routes Available from {source_iata} to {destination_iata}",
+                )
 
-        airport_map.save('airport_map.html')
+        airport_map.save("airport_map.html")
         self.web_view.setHtml(open("airport_map.html").read())
 
 
