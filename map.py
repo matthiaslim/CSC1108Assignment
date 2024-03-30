@@ -489,12 +489,22 @@ class MapWindow(QMainWindow):
                 list: consist of the all the IATA codes from source, destination, intermediaries airports
         """
         source_iata, destination_iata, intermediate_iata = self.search_flights()
-        if source_iata == destination_iata or source_iata == intermediate_iata or destination_iata == intermediate_iata:
+        # Check if source and destination are different
+        if source_iata == destination_iata:
             QMessageBox.information(self, "Invalid Route Path", "Please select two different airports")
             return
-        if len(intermediate_iata) != len(set(intermediate_iata)):
-            QMessageBox.information(self, "Invalid Route Path", "Please select different intermediate paths")
-            return
+
+        locations = [source_iata, destination_iata]
+
+        # Check if intermediate_iata is provided
+        if intermediate_iata is not None:
+            locations.extend(intermediate_iata)
+
+            # Check if stop 1, stop 2, stop 1 to destination, and stop 2 to destination are the same
+            if len(set(locations)) != len(locations):
+                QMessageBox.information(self, "Invalid Route Path", "One or more locations are the same")
+                return
+
         airport_graph = self.AirportGraph
         airport_map = folium.Map(
             location=[50.170824, 15.087472], zoom_start=4, tiles="cartodb positron"

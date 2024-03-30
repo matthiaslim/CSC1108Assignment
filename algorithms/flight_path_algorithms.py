@@ -411,7 +411,7 @@ class BFS:
 
         # Function to perform Breadth First Search on the flight graph to return path with the least route edges
 
-    def find_least_layovers(self, source_airport, destination_airport):
+    def find_least_layovers(self, source_airport, destination_airport, depth=0, max_depth=10):
         # Create a queue for BFS
         queue = deque()
         visited = set()
@@ -419,13 +419,13 @@ class BFS:
         previous_airport = {}  # Initialize a dictionary to store the previous airport for each airport
 
         # Mark the source airport as visited and enqueue it along with the initial layover count of 0
-        queue.append(source_airport)
+        queue.append((source_airport, depth))
         visited.add(source_airport)
 
         # Iterate over the queue
         while queue:
             # Dequeue a vertex from the queue
-            current_airport = queue.popleft()
+            current_airport, current_depth = queue.popleft()
 
             # If current airport is the destination, stop
             if current_airport == destination_airport:
@@ -437,7 +437,7 @@ class BFS:
                     #  Update the path taken
                     previous_airport[neighbour] = current_airport
                     visited.add(neighbour)
-                    queue.append(neighbour)
+                    queue.append((neighbour, current_depth + 1))
 
         # If the destination airport is not visited, it means it is not reachable
         if destination_airport not in visited:
@@ -446,15 +446,22 @@ class BFS:
             nearest_airport = self.graph.find_nearest_airport(destination_airport)
             print(f"Rerouting to nearest airport {nearest_airport}.")
 
-            # Check if the nearest airport has routes to it
-            if nearest_airport is None or not self.graph.get_routes_to(nearest_airport):
-                print(f"No flights to {nearest_airport}.")
+            # Check if there are routes to the nearest airport
+            if nearest_airport is not None and self.graph.get_routes_to(nearest_airport):
+                destination_airport = nearest_airport
+                print(f"Rerouting to nearest airport {nearest_airport} with available flights.")
+
+                # Check if maximum depth is reached
+                if depth < max_depth:
+                    # Restart the search from the source airport to the nearest airport
+                    return self.find_least_layovers(source_airport, destination_airport, depth + 1, max_depth)
+                else:
+                    print("Maximum recursion depth reached.")
+                    return None
+            else:
+                # If nearest airport has no routes, or doesn't exist, inform user and return None
+                print(f"No flights found to {destination_airport} or nearest airports.")
                 return None
-
-            destination_airport = nearest_airport
-
-            # Restart the search from the source airport to the nearest airport
-            return self.find_least_layovers(source_airport, destination_airport)
 
         # Reconstruct the shortest path from the previous_airport dictionary
         shortest_path = []

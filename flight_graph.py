@@ -254,6 +254,6 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
-print(graph.find_route("LHR", "CRV", "optimal", ['AMS']))
-print(graph.find_route("LHR", "CRV", "least layovers", ['AMS']))
-print(graph.find_route("LHR", "CRV", "shortest distance", ['AMS']))
+# print(graph.find_route("LHR", "CRV", "optimal", ['AMS']))
+# print(graph.find_route("LHR", "CRV", "least layovers", ['AMS']))
+# print(graph.find_route("LHR", "CRV", "shortest distance", ['AMS']))
