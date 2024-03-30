@@ -19,14 +19,9 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import flight_graph
+from utils.calculation_utils import format_duration
 import re
 import folium.plugins
-
-
-def format_hours_mins(decimal_hours):
-    hours = int(decimal_hours)
-    minutes = int((decimal_hours - hours) * 60)
-    return f"{hours} hours {minutes} mins"
 
 
 class MapWindow(QMainWindow):
@@ -407,7 +402,7 @@ class MapWindow(QMainWindow):
                     edge_coords.append(midpoint)
 
                     segment_info = segment[i]
-                    popup_text = f"Distance: {segment_info['distance']:.2f} km<br>Cost: ${segment_info['cost']}<br>Duration: {format_hours_mins(segment_info['duration'])}"
+                    popup_text = f"Distance: {segment_info['distance']:.2f} km<br>Cost: ${segment_info['cost']}<br>Duration: {format_duration(segment_info['duration'])}"
                     folium.plugins.AntPath(
                         locations=edge_coords,
                         tooltip=popup_text,
