@@ -494,6 +494,12 @@ class MapWindow(QMainWindow):
             QMessageBox.information(self, "Invalid Route Path", "Please select two different airports")
             return
 
+        #Check if any options is selected if dont process
+        if ((self.optimal_checkbox.isChecked() is False) and (self.cheapest_checkbox.isChecked() is False) and (self.shortest_dur_checkbox.isChecked() is False)
+            and (self.least_layover_checkbox.isChecked() is False) and (self.shortest_dist_checkbox.isChecked() is False)):
+            QMessageBox.information(self, "Invalid Selection", "Please select one of the categories")
+            return    
+
         locations = [source_iata, destination_iata]
 
         # Check if intermediate_iata is provided
