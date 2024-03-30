@@ -215,7 +215,10 @@ class FlightGraph:
             if criteria in ["optimal", "shortest distance", "least cost", "shortest duration", "least layovers"] \
                     and intermediate_airports:
                 # Handle multi-city flights
-                if criteria == "shortest distance":
+                if criteria == "optimal":
+                    return self.astar.find_optimal_flight_multi(source_airport, destination_airport,
+                                                                intermediate_airports)
+                elif criteria == "shortest distance":
                     return self.dijkstra.find_shortest_distance_multi(source_airport,
                                                                       destination_airport, intermediate_airports)
                 elif criteria == "least cost":
@@ -224,8 +227,9 @@ class FlightGraph:
                 elif criteria == "shortest duration":
                     return self.dijkstra.find_shortest_duration_multi(source_airport, destination_airport,
                                                                       intermediate_airports)
-                # elif criteria == "least layovers":
-                #     return self.bfs.find_least_layovers_multi(source_airport, destination_airport, intermediate_airports)
+                elif criteria == "least layovers":
+                    return self.bfs.find_least_layovers_multi(source_airport, destination_airport,
+                                                              intermediate_airports)
             else:
                 # Handle single-city flights
                 if criteria == "optimal":
@@ -245,7 +249,6 @@ class FlightGraph:
 
 # test
 graph = FlightGraph("data/europe_airports.csv", "data/europe_flight_dataset.csv")
+print(graph.find_route("LHR", "CRV", "optimal", ['AMS']))
+print(graph.find_route("LHR", "CRV", "least layovers", ['AMS']))
 print(graph.find_route("LHR", "CRV", "shortest distance", ['AMS']))
-print(graph.find_route("LHR", "CRV", "least cost", ['AMS']))
-print(graph.find_route("LHR", "CRV", "shortest duration", ['AMS']))
-
