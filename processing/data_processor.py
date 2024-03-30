@@ -25,6 +25,9 @@ def slice_routes_data(airports, routes):
     for route in routes:
         if route['Source airport'] in europe_airports and route['Destination airport'] in europe_airports:
             sliced_routes.append(route)
+            # Drop unwanted columns before appending
+            del route['Airline']
+            del route['Airline ID']
     return sliced_routes
 
 
@@ -54,7 +57,7 @@ def main():
 
     # Write sliced routes data to CSV
     csv_operations.write_to_csv(sliced_routes, os.path.join(data_directory, 'europe_routes.csv'),
-                                columns=['Airline', 'Airline ID', 'Source airport', 'Destination airport'])
+                                columns=['Source airport', 'Destination airport'])
 
     # Merge city-country data
     europe_airports = pd.read_csv(os.path.join(data_directory, 'europe_airports.csv'))

@@ -4,7 +4,7 @@ from utils.calculation_utils import haversine_formula_distance, calculate_flight
 
 def calculate_distance():
     data = pd.read_csv("../data/europe_flights_without_distance.csv")
-    data.columns = ["Airline", "Airline ID", "Source Airport IATA", "Destination Airport IATA",
+    data.columns = ["Source Airport IATA", "Destination Airport IATA",
                     "Source City", "Source Country", "Destination City", "Destination Country", "Source Latitude",
                     "Source Longitude",
                     "Destination Latitude", "Destination Longitude"]
@@ -18,7 +18,7 @@ def calculate_distance():
 
 def calculate_cost():
     data = pd.read_csv("../data/europe_flight_dataset_without_cost.csv")
-    data.columns = ["Airline", "Airline ID", "Source Airport IATA", "Destination Airport IATA",
+    data.columns = ["Source Airport IATA", "Destination Airport IATA",
                     "Source City", "Source Country", "Destination City", "Destination Country", "Source Latitude",
                     "Source Longitude",
                     "Destination Latitude", "Destination Longitude", "Distance"]
@@ -30,7 +30,7 @@ def calculate_cost():
 
 def calculate_duration():
     data = pd.read_csv("../data/europe_flight_dataset_without_duration.csv")
-    data.columns = ["Airline", "Airline ID", "Source Airport IATA", "Destination Airport IATA",
+    data.columns = ["Source Airport IATA", "Destination Airport IATA",
                     "Source City", "Source Country", "Destination City", "Destination Country", "Source Latitude",
                     "Source Longitude",
                     "Destination Latitude", "Destination Longitude", "Distance", "Estimated Cost"]
