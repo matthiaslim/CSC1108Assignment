@@ -34,14 +34,21 @@ The flight routing paths is designed to efficiently search for flight routes usi
 
 python -m venv env
 
+# If you have encounter issue to generate a Script for windows follow these steps
+
+- Step 1 : pip install virtualenv
+- Step 2: virtualenv env
+
 # Use this line to activate the virtual environment
 
 For Windows :
 
+- use command prompt to do the following:
 - .\env\Scripts\activate
 
 For Mac/Unix OS:
 
+- use terminal to do the following:
 - source env/bin/activate
 
 # Step 3 : Installing dependencies
@@ -63,6 +70,8 @@ PyQtWebEngine-Qt5==5.15.12
 - Run the program through python map.py
 
 # Packages needs to be install.
+
+- Use pip list/pip freeze to view the packages installed.
 
 basemap==1.4.1
 basemap-data==1.3.2
@@ -95,10 +104,10 @@ pyparsing==3.1.2
 pyperclip==1.8.2
 pyproj==3.6.1
 PyQt5==5.15.10
-PyQt5-Qt5==5.15.12
+PyQt5-Qt5==5.15.2
 PyQt5-sip==12.13.0
 PyQtWebEngine==5.15.6
-PyQtWebEngine-Qt5==5.15.12
+PyQtWebEngine-Qt5==5.15.2
 pyshp==2.3.1
 python-dateutil==2.9.0.post0
 pytz==2024.1
